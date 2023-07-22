@@ -15,9 +15,12 @@ def amzn_get_asin(url):
     """
     # Extract the search string from the URL by removing the first 8 characters
     search_string = url.strip("https://")
-    # Split the search string by '/' and get the product ID at index 3
-    asin = search_string.split('/')[3]
-    return asin
+    # Split the search string by '/' and get the product ID; the first ten digits at index 3
+    name = search_string.split('/')[0]
+    asin = search_string.split('/')[3][:10]
+
+    print(f"Amazon Standard Indentification Number [ASIN]: {asin}")
+    return {"asin":asin, "name":name}
 
 
 def amzn_get_details_from_url(url):
@@ -41,7 +44,9 @@ def amzn_get_details_from_url(url):
     }
 
     base_url = "https://amazon23.p.rapidapi.com/product-details"
-    response = requests.get(base_url, headers=headers, params=querystring, timeout=18)
+    response = requests.get(base_url, headers=headers, params=querystring, timeout=10)
+
+    print(f"Troubleshoot : {response.json if response.json else 'Nothing returned'}")
 
     if response.status_code == 200:
         return response.json()
@@ -84,12 +89,12 @@ for details, i in zip(product_details, range(1, cmp_items + 1)):
     if details is not None:
         print(f"""
 Product Details [{i}] ->
-Title: {amzn_get_product_details(details)["title"]}
-Description: {amzn_get_product_details(details)["desc"]}
-Price: {amzn_get_product_details(details)["price"]}
-Rating: {amzn_get_product_details(details)["rating"]}
-No. of Reviews: {amzn_get_product_details(details)["no_of_reviews"]}\n""")
+Title: {info["title"]}
+Description: {info["desc"]}
+Price: {info["price"]}
+Rating: {info["rating"]}
+No. of Reviews: {info["no_of_reviews"]}""")
     else:
         print(f"""Error ->
-Product Details [{i}] not found.\n""")
+Product Details [{i}] not found.""")
         
