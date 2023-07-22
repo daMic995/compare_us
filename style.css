@@ -1,0 +1,35 @@
+/*--------------------------------------------------------------
+# General
+--------------------------------------------------------------*/
+:root {
+    scroll-behavior: smooth;
+  }
+
+body {
+    font-family: "Open Sans", sans-serif;
+    color: #444444;
+}
+  
+/*--------------------------------------------------------------
+# Sections
+--------------------------------------------------------------*/
+section {
+    padding: 60px 0;
+    overflow: hidden;
+}
+  
+.section-header {
+    text-align: center;
+    padding-bottom: 40px;
+}
+  
+.section-header h2 {
+    font-size: 13px;
+    letter-spacing: 1px;
+    font-weight: 700;
+    margin: 0;
+    color: #8166e2;
+    text-transform: uppercase;
+}
+
+  
