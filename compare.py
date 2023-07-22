@@ -33,8 +33,8 @@ def amzn_get_details_from_url(url):
     Returns:
         dict: The product details extracted from the ASIN from the URL.
     """
-
-    product_id = amzn_get_asin(url)
+    results = amzn_get_asin(url)
+    product_id = results["asin"]
 
     querystring = {"asin":f"{product_id}","country":"US"}
 
@@ -43,6 +43,7 @@ def amzn_get_details_from_url(url):
         "X-RapidAPI-Host": "amazon23.p.rapidapi.com"
     }
 
+    # Need New Amazon API
     base_url = "https://amazon23.p.rapidapi.com/product-details"
     response = requests.get(base_url, headers=headers, params=querystring, timeout=10)
 
@@ -83,10 +84,12 @@ for i in range(cmp_items):
 
 # Get the product details from Amazon
 product_details = [amzn_get_details_from_url(url) for url in urls]
+print(product_details)
 
 # Print the product details
 for details, i in zip(product_details, range(1, cmp_items + 1)):
     if details is not None:
+        info = amzn_get_product_details(details)
         print(f"""
 Product Details [{i}] ->
 Title: {info["title"]}
