@@ -13,8 +13,10 @@ def amzn_get_asin(url):
     Returns:
         str: The ASIN extracted from the URL.
     """
+
     # Extract the search string from the URL by removing the first 8 characters
     search_string = url.strip("https://")
+
     # Split the search string by '/' and get the product ID; the first ten digits at index 3
     name = search_string.split('/')[0]
     asin = search_string.split('/')[3][:10]
@@ -58,15 +60,16 @@ def amzn_get_details_from_url(url):
 
 def amzn_get_product_details(details_dict):
     """
-    Retrieves the product details from a Amazon result json.
+    Retrieves the product details from an Amazon result json.
     """
-
+    
     title = details_dict["result"][0]["title"]
     desc = details_dict["result"][0]["description"]
     price = details_dict["result"][0]["price"]["symbol"] + str(details_dict["result"][0]["price"]["current_price"])
     rating = details_dict["result"][0]["reviews"]["rating"]
     no_of_reviews = details_dict["result"][0]["reviews"]["total_reviews"]
     images = details_dict["result"][0]["images"]
+
     return {"title":title, "desc":desc, "price":price, "rating":rating,
             "no_of_reviews":no_of_reviews, "images":images}
 
