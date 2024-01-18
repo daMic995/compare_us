@@ -62,7 +62,7 @@ def amzn_get_product_details(details_dict):
     """
     Retrieves the product details from an Amazon result json.
     """
-    
+
     title = details_dict["result"][0]["title"]
     desc = details_dict["result"][0]["description"]
     price = details_dict["result"][0]["price"]["symbol"] + str(details_dict["result"][0]["price"]["current_price"])
