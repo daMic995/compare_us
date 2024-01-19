@@ -2,6 +2,7 @@ from flask import (Flask, flash, jsonify, redirect, render_template, request,
                    session)
 
 import compare
+
 # Create an instance of Flask
 app = Flask(__name__)
 

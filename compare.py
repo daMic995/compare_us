@@ -72,5 +72,4 @@ def amzn_get_product_details(details_dict):
 
     return {"title":title, "desc":desc, "price":price, "rating":rating,
             "no_of_reviews":no_of_reviews, "images":images}
-
         
