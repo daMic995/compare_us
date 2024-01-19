@@ -12,21 +12,31 @@
     <title>Compare</title>
   </head>
   <body>
-    <div class="container">
-      <nav class="navbar bg-primary" data-bs-theme="dark">
-        <div class="container-fluid">
-          <a class="navbar-brand">Compare Stuff</a>
-          <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
-          </form>
+    <div id="about" class="section wide img">
+      <div class="title">COMPARE ITEMS</div>
+      <h2>Insert the links of items you want to compare. Click the button below to compare items</h2>
+      <div class="compare-items">
+        <div class="columns w-row">
+          <div class="w-col w-col-6">
+            <div class="w-form">
+              <form id="item-link-1" name="item-link-1" data-name="Link Form" method="post" class="form-3">
+                <label for="name" class="field-label">Item 1 link</label>
+                <input class="w-input" maxlength="256" name="name" data-name="Name" placeholder="" type="text" id="link-1">
+              </form>
+            </div>
+          </div>
+          <div class="w-col w-col-6">
+            <div class="w-form">
+              <form id="item-link-1" name="item-link-1" data-name="Link Form" method="post" class="form-3">
+                <label for="name" class="field-label">Item 2 link</label>
+                <input class="w-input" maxlength="256" name="name" data-name="Name" placeholder="" type="text" id="link-1">
+              </form>
+            </div>
+          </div>
         </div>
-      </nav>
+      </div>
+      <a href="#" class="button w-button">Compare</a>
     </div>
-    <div class="container-fluid">
-      <section>
-        <div class="section-header">Section Header</div>
-      </section>
-    </div>
+    
   </body>
 </html>
