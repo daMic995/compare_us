@@ -73,34 +73,4 @@ def amzn_get_product_details(details_dict):
     return {"title":title, "desc":desc, "price":price, "rating":rating,
             "no_of_reviews":no_of_reviews, "images":images}
 
-
-# Start from here
-print("Compare Stuff".center(50, "-"))
-cmp_items = int(input("How many items do you want to compare? "))
-
-urls = []
-
-for i in range(cmp_items):
-    url = input(f"Enter the Amazon URL [{i+1}]: ")
-    urls.append(url)
-    print("\n")
-
-# Get the product details from Amazon
-product_details = [amzn_get_details_from_url(url) for url in urls]
-print(product_details)
-
-# Print the product details
-for details, i in zip(product_details, range(1, cmp_items + 1)):
-    if details is not None:
-        info = amzn_get_product_details(details)
-        print(f"""
-Product Details [{i}] ->
-Title: {info["title"]}
-Description: {info["desc"]}
-Price: {info["price"]}
-Rating: {info["rating"]}
-No. of Reviews: {info["no_of_reviews"]}""")
-    else:
-        print(f"""Error ->
-Product Details [{i}] not found.""")
         
