@@ -16,9 +16,14 @@ def compare():
     link_2 = request.args.get("link_2")
 
     product_1 = compare.amzn_get_details_from_url(link_1)
-    product_2 = compare.amzn_get_details_from_url(link_2)
+    #product_2 = compare.amzn_get_details_from_url(link_2)
 
     details_1 = compare.amzn_get_product_details(product_1)
-    details_2 = compare.amzn_get_product_details(product_2)
+    #details_2 = compare.amzn_get_product_details(product_2)
 
-    return(render_template("compare.html", item_1=details_1, item_2=details_2))
+    
+    return(render_template("compare.html", item_1=details_1))
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
