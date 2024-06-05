@@ -20,7 +20,6 @@ def compare():
 
     details_1 = compare.amzn_get_product_details(product_1)
     #details_2 = compare.amzn_get_product_details(product_2)
-
     
     return(render_template("compare.html", item_1=details_1))
 
