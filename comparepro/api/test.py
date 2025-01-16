@@ -1,16 +1,8 @@
-import requests
-from dotenv import load_dotenv
-import os
+import pandas as pd
+from compare import comparator, COMPARISONS
 
-load_dotenv()
 
-# Amazon API
-X_RapidAPI_Key = os.getenv('AMAZON_API_KEY')
-X_RapidAPI_Host = os.getenv('AMAZON_API_HOST')
-
-COMPARISONS = ['title', 'currency', 'price', 'description', 'details', 'images',  'reviews', 'url']
-
-test_product1 = [{'asin': 'B0DLK83KCD', 
+product1 = [{'asin': 'B0DLK83KCD', 
              'availability': {'message': 'Only 17 left in stock - order soon.', 'type': 'IN_STOCK_SCARCE'}, 
              'country': 'US', 
              'currency': 'USD', 
@@ -33,7 +25,7 @@ test_product1 = [{'asin': 'B0DLK83KCD',
             'title': '751-739 Front Driver Side Power Window Regulator w/Motor (2 Pins) Fit for Chevy Cruze 2012 2013 2014 2015,Chevrolet Cruze Limited 2016,w/o Express Up and Down', 
             'url': ['https://www.amazon.com/751-739-Front-Driver-Side-Regulator/dp/B0DLK83KCD']}]
 
-test_product2 = [{'asin': 'B0CJLRPZX1', 
+product2 = [{'asin': 'B0CJLRPZX1', 
              'availability': {'message': 'In Stock', 'type': 'IN_STOCK'}, 
              'country': 'US', 
              'currency': 'USD', 
@@ -49,84 +41,28 @@ test_product2 = [{'asin': 'B0CJLRPZX1',
              'url': ['https://www.amazon.com/Torchbeam-Regulator-Without-749-974-2011-2015/dp/B0CJLRPZX1']}]
 
 
-def store_check(url):
-    check = ''
-    search_string = url.strip("https://")
 
-    store_name = search_string.split('/')[0]
+product1 = comparator(product1)
+product2 = comparator(product2)
 
-    if store_name == "www.amazon.com":
-        check = 'a'
-    elif store_name == "bestbuy.com":
-        check = 'b'
+def constr_comp(products):
+    dfp = []
+    for p in products:
+        title = p['title']
+        currency = p['currency']
+        price = p['price']
+        description = p['description']
+        details = p['details']
+        images = p['images']
+        reviews = p['reviews']
+        url = p['url'][0]
 
-    return check, url
-
-
-def amzn_get_asin(url):
-    """
-    Extracts the Amazon Standard Identification Number (ASIN) from a given Amazon product URL.
-
-    :param url: The URL of the Amazon product.
-    :return: The ASIN extracted from the URL.
-    """
-    # Remove the "https://" prefix from the URL to get the search string
-    search_string = url.strip("https://")
-
-    # Split the search string by '/' and extract the ASIN, which is the fourth element
-    asin = search_string.split('/')[3][:10]
-
-    return asin
-    
-
-def amzn_get_product(product_url):
-    """
-    Retrieves product data from Amazon using the provided product URL.
-
-    :param product_url: The URL of the Amazon product.
-    :return: A dictionary containing product details.
-    """
-    # Extract the ASIN from the product URL
-    asin = amzn_get_asin(product_url)
-
-    # Define the API endpoint for fetching product data
-    api_url = "https://amazon-online-data-api.p.rapidapi.com/product"
-
-    # Set the query parameters with the ASIN and geographical location
-    querystring = {"asins": asin, "geo": "US"}
-
-    # Set the necessary headers for the API request
-    headers = {
-        "x-rapidapi-key": X_RapidAPI_Key,
-        "x-rapidapi-host": X_RapidAPI_Host
-    }
-
-    # Perform the API request
-    response = requests.get(api_url, headers=headers, params=querystring)
-
-    # Extract the product data from the API response
-    product = response.json()['results'][0]
-
-    return product
+        dfp.append([title, currency, price, description, details, images, reviews, url])
 
 
-def comparator(product):
-    """
-    Compares the product data to the comparison criteria and 
-    constructs a dictionary with the valid comparisons.
+    df = pd.DataFrame({'Product 1' : dfp[0],
+                       'Product 2' : dfp[1]}, index = COMPARISONS)
 
-    Args:
-        product (dict): The product data.
+    print(df)
 
-    Returns:
-        dict: A dictionary with the valid product data.
-    """
-    valid = {}
-    for c in COMPARISONS:
-        for p, v in product.items():
-            if c in p:
-                # Construct the valid dictionary with the comparison
-                # criteria as the keys and the product data as the values
-                valid[f'{c}'] = v
-
-    return valid
+constr_comp([product1, product2])
