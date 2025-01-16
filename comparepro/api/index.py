@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-from compare import *
+from comparepro.api.compare import *
 
 app = Flask(__name__)
 
