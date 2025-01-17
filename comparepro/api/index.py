@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from api.compare import *
+from api.test import test_products_data
 
 app = Flask(__name__)
 
@@ -28,10 +29,12 @@ def compare():
     product2 = data["product2"]
 
     if product1 and product2:
-        print('Products Received')
+        print('Products URL Received!')
 
-    products = [product1, product2]
+    products = test_products_data
 
+    """products = [product1, product2]
+    
     for p in products:
         [check, url] = store_check(p)
         if check == 'a':
@@ -44,6 +47,6 @@ def compare():
             products[products.index(p)] = pro
         elif check == 'b':
             # Add support for Best Buy
-            pass
-
+            pass"""
+    
     return jsonify({"product1": products[0], "product2": products[1], "status": 200})

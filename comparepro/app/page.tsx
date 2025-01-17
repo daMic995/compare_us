@@ -1,13 +1,16 @@
 "use client"
+import { on } from 'events';
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useState, useEffect } from 'react';
-import {BsChevronCompactLeft, BsChevronCompactRight} from 'react-icons/bs';
-import {RxDotFilled} from 'react-icons/rx';
+import React, { useState, useEffect, useRef } from 'react';
+import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
+import { RxDotFilled } from 'react-icons/rx';
+import StarRatings from 'react-star-ratings';
 
 export default function Home() {
   // Set up an empty comparison object
-  const comp = {title: '', currency: '', price: '', description: '', details: '', images: [], reviews: {count: '', rating: ''}, url: ''}
+  const comp = {title: '', currency: '', price: '', description: '', details: [''], 
+                images: [''], reviews: {count: '', rating: ''}, url: ''}
 
   // Set up state variables for product URLs and comparison results
   const [product_url1, setProduct_url1] = useState('');
@@ -18,10 +21,25 @@ export default function Home() {
   // Set up state variable for comparison status code
   const [status, setStatus] = useState<number | null>(null);
   
+  // Set up state variable for scroll to section
+  const [scrollToSection, setScrollToSection] = useState(false);
+  const targetRef = useRef<HTMLDivElement>(null);
+
+  // Set up state variables for product descriptions display
+  const [showDescription1, setShowDescription1] = useState(false);
+  const [showDescription2, setShowDescription2] = useState(false);
+
   // Set up state variables for image navigation
   const [currIndex1, setCurrIndex1] = useState(0);
   const [currIndex2, setCurrIndex2] = useState(0);
 
+  const showDescription = (index: number) => {
+    if (index === 0) {
+      setShowDescription1(!showDescription1);
+    } else {
+      setShowDescription2(!showDescription2);
+    }
+  }
   /**
    * Navigate to the previous slide in the images list.
    * If the current index is the first one, wrap around to the last one.
@@ -91,6 +109,7 @@ export default function Home() {
       setCurrIndex2(index);
     }
   }
+
   /**
    * Handles form submission for product comparison.
    * Prevents default form submission behavior, sends a POST request to the comparison API,
@@ -120,11 +139,26 @@ export default function Home() {
       // Update the product states with the comparison results
       setProduct1(data.product1);
       setProduct2(data.product2);
+
+      // Set scrollToSection to true after successful response
+      setScrollToSection(true);
+
     } catch (error) {
       console.error('Error comparing products:', error);
       setStatus(404);
     }
   };
+
+  useEffect(() => {
+    if (scrollToSection) {
+      // Scroll to the comparison section after the comparison is complete
+      const comparisonSection = document.getElementById('results-section');
+      if (comparisonSection) {
+        comparisonSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    setScrollToSection(false);
+  }, [scrollToSection]);
 
   return (
     <div className="flex flex-col min-h-screen overflow-hidden-x">
@@ -136,7 +170,7 @@ export default function Home() {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 pt-0.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <input className="ml-2 outline-none bg-transparent border-outline border border-outline rounded-lg px-2" type="text" name="search" id="search" placeholder="Search Feature..." />
+            <input className="ml-2 outline-none bg-transparent border-outline border border-outline rounded-lg px-2" type="text" name="search" id="search" placeholder="Filter Feature..." />
           </div>
           <ul className="px-4 flex items-center space-x-6">
             <Link href="/">
@@ -181,55 +215,119 @@ export default function Home() {
 
       {/* Comparison section */}
       {status === 200 ? 
-      <div className='flex flex-col items-center justify-between px-6 py-8 w-screen bg-gradient-to-b from-black to-white via-gray-500 bg-radial'>
-        <div className='flex flex-col items-center justify-between p-12'>
-          <div className="grid grid-cols-2 gap-6 py-6 px-6">
+      <div id="results-section" className='flex flex-col items-center justify-between px-6 py-8 w-screen bg-gradient-to-b from-black to-white via-gray-500 bg-radial'>
+        <div className='flex flex-col items-center justify-between p-8'>
+          <div className="grid grid-cols-2 gap-6 py-4 px-6">
             {/* Product cards */}
             {[product1, product2].map((product, productIndex) => (
-            <div key={productIndex} className='flex flex-col bg-white rounded-lg'>
-              <div className='grid grid-cols-5 gap-6 p-6'>
-                <div className='flex flex-col col-span-4'>
-                  <p className='text-xl font-bold text-black'>{product.title}</p>
-                </div>
-                <div className='flex flex-col text-right'>
-                  <div className='bg-black rounded-md text-center py-2'>
-                    <span className='text-white text-sm p-2'>{product.currency} {product.price}</span>
+            <div key={productIndex}>
+              <div className='flex flex-col bg-white rounded-lg'>
+                <div className='flex flex-col rounded-lg justify-left px-6 py-1'>
+                  {/* Product image */}
+                  <div className='flex flex-col py-12 max-w-[500px] h-[500px] w-full m-auto relative group'>
+                    <div style={{backgroundImage: `url(${product.images[productIndex=== 0 ? currIndex1 : currIndex2]})`, 
+                    backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', width: '100%', height: '100%', position: 'relative'}}></div>
+                    {/* Left arrow */}
+                    <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] left-5 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
+                      <BsChevronCompactLeft onClick={() => prevSlide(product.images, productIndex)} size={30}/>
+                    </div>
+                    {/* Right arrow */}
+                    <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] right-5 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
+                      <BsChevronCompactRight onClick={() => nextSlide(product.images, productIndex)} size={30}/>
+                    </div>
+                    <div className='flex top-4 justify-center py-2'>
+                      {product.images.map((slide, slideIndex) => (
+                        <div key={slideIndex} onClick={() => goToSlide(slideIndex, productIndex)}>
+                          <a className='text-xl cursor-pointer'>
+                            <RxDotFilled/>
+                          </a>
+                        </div>
+                    ))}
+                    </div>
                   </div>
-                  <a href={product.url} className='text-white text-sm font-semibold hover:underline mt-10 py-2'>
-                    <span className='bg-blue-500 p-2 rounded-md'>Get It</span>
-                   </a>
+                </div>
+
+                <div className='grid grid-cols-5 gap-6 px-6'>
+                  {/* Product Title and Price */}
+                  <div className='flex flex-col col-span-4'>
+                    <p className='text-lg font-bold text-black'>{product.title}</p>
+                  </div>
+                  <div className='flex flex-col text-right'>
+                    <div className='bg-black rounded-md text-center py-2'>
+                      <span className='text-white text-sm p-2'>{product.currency} {product.price}</span>
+                    </div>
+                    <a href={product.url} className='text-white text-sm font-semibold hover:underline mt-10 py-2'>
+                      <span className='bg-blue-500 p-2 rounded-md'>Get It</span>
+                    </a>
+                  </div>
+                </div>
+
+                <div className='flex flex-col rounded-lg justify-left p-6'>
+
+                  <div className='flex flex-col'>
+                    {/* Product Rating */}
+                    {product.reviews.rating === '' ? "No reviews" :
+                      <div className='grid grid-cols-5'>
+                        <div className='flex flex-col col-span-2'>
+                        <StarRatings
+                          rating={parseFloat(product.reviews.rating)}
+                          starRatedColor="gold"
+                          numberOfStars={5}
+                          name='rating'
+                          starDimension="20px"
+                          starSpacing="2px"
+                        />
+                        </div>
+                        <div className='flex flex-col col-span-1'>
+                          <p className='text-sm text-gray-500'>{product.reviews.rating}</p>
+                        </div>
+                        <div className='flex flex-col col-span-2 items-end'>
+                          <button onClick={() => showDescription(productIndex)} 
+                          className='text-sm text-gray-500 hover:underline cursor-pointer'>
+                            {productIndex === 0 ? showDescription1 ? 'Hide Description' : 'View Description' 
+                                                : showDescription2 ? 'Hide Description' : 'View Description'}
+                          </button>                      
+                        </div>
+                      </div>
+                      }
+                  </div>
+                  
+                  {
+                  productIndex === 0 ? 
+                    showDescription1 ? 
+                      <div className='flex flex-col py-6 transition transform duration-700 ease-in-out'>
+                      {/* Product Description */}
+                      {product.description === "" ? 
+                        <p className='text-md text-gray-500 p-2 border border-gray-200'>No description found</p> : 
+                        <p className='text-md text-black p-2 border border-gray-200'>{product.description}</p>
+                      }
+                      </div> : null 
+                  : showDescription2 ?                       
+                      <div className='flex flex-col py-6 transition transform duration-700 ease-in-out'>
+                      {/* Product Description */}
+                      {product.description === "" ? 
+                        <p className='text-md text-gray-500 p-2 border border-gray-200'>No description found</p> : 
+                        <p className='text-md text-black p-2 border border-gray-200'>{product.description}</p>
+                      }
+                      </div> : null 
+                  }
+
                 </div>
               </div>
-              <div className='flex flex-col rounded-lg justify-left p-6'>
-                {product.description === "" ? 
-                  <p className='text-md text-gray-500 p-2 border border-gray-200'>No description found</p> : 
-                  <p className='text-md text-black p-2 border border-gray-200'>{product.description}</p>
-                }
-                <div className='flex flex-col py-12 max-w-[500px] h-[500px] w-full m-auto relative group'>
-                  {/* Product image */}
-                  <div style={{backgroundImage: `url(${product.images[productIndex=== 0 ? currIndex1 : currIndex2]})`, 
-                  backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', width: '100%', height: '100%', position: 'relative'}}></div>
-                  {/* Left arrow */}
-                  <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] left-5 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
-                    <BsChevronCompactLeft onClick={() => prevSlide(product.images, productIndex)} size={30}/>
-                  </div>
-                  {/* Right arrow */}
-                  <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] right-5 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
-                    <BsChevronCompactRight onClick={() => nextSlide(product.images, productIndex)} size={30}/>
-                  </div>
-                  <div className='flex top-4 justify-center py-2'>
-                    {product.images.map((slide, slideIndex) => (
-                      <div key={slideIndex} onClick={() => goToSlide(slideIndex, productIndex)}>
-                        <a className='text-xl cursor-pointer'>
-                          <RxDotFilled/>
-                        </a>
-                      </div>
-                  ))}
-                  </div>
-                </div>
-                <div className='flex flex-col'>
-                  <p>Rating : {product.reviews.rating === '' ? "No reviews" : product.reviews.rating}</p>
-                </div>
+              <div className='flex flex-col bg-white rounded-lg mt-8 p-6'>
+                <table className='p-2 '>
+
+                {product.details.map((detail, index) => (
+                  <tr key={index}>
+                    {detail.split(':').map((part, partIndex) => (
+                      <td>
+                        {partIndex === 0 ? <b>{part}</b> : <span>{part}</span>}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+
+              </table>
               </div>
             </div>
             ))}
