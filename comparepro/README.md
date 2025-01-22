@@ -1,10 +1,10 @@
 <p align="center">
-  <a href="[https://nextjs-flask-starter.vercel.app](https://compare-us-mu.vercel.app/)/">
+  <a href="https://compare-us-mu.vercel.app/">
     <img src="app/favicon.ico" height="96">
     <h3 align="center">Compare Pro</h3>
   </a>
 </p>
-
+https://compare-us-mu.vercel.app/
 <p align="center">This is a hybrid Next.js + Python app that uses Next.js as the frontend and Flask as the API backend.</p>
 
 <br/>
