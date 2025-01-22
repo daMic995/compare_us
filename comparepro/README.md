@@ -4,7 +4,7 @@
     <h3 align="center">Compare Pro</h3>
   </a>
 </p>
-https://compare-us-mu.vercel.app/
+
 <p align="center">This is a hybrid Next.js + Python app that uses Next.js as the frontend and Flask as the API backend.</p>
 
 <br/>
@@ -14,3 +14,5 @@ This project is a comparison web application that allows users to compare detail
 Product information is gotten using a dedicated API to the store and displayed as a product card. Details are compared side-by-side.
 
 Current capability only provides comparison between Amazon products but future updates will include more capabilities.
+
+<p align="center">Only sample products are displayed currently.</p>
