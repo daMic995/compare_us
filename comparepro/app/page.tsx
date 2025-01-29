@@ -3,9 +3,12 @@ import { on } from 'events';
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useState, useEffect, useRef } from 'react';
-import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
+import { BsChevronCompactLeft, BsChevronCompactRight, BsChevronUp, BsChevronDown } from 'react-icons/bs';
 import { RxDotFilled } from 'react-icons/rx';
 import StarRatings from 'react-star-ratings';
+
+import { pfeatures, searchFeatures, scrollToFeature } from './features';
+import { Input } from 'postcss';
 
 export default function Home() {
   // Set up an empty comparison object
@@ -32,6 +35,8 @@ export default function Home() {
   // Set up state variables for image navigation
   const [currIndex1, setCurrIndex1] = useState(0);
   const [currIndex2, setCurrIndex2] = useState(0);
+
+  const [searchFeature, setSearchFeature] = useState('');
 
   const showDescription = (index: number) => {
     if (index === 0) {
@@ -151,10 +156,15 @@ export default function Home() {
 
   useEffect(() => {
     if (scrollToSection) {
+      const navbarHeight = document.querySelector("nav")?.clientHeight || 0;
+      
       // Scroll to the comparison section after the comparison is complete
       const comparisonSection = document.getElementById('results-section');
       if (comparisonSection) {
-        comparisonSection.scrollIntoView({ behavior: 'smooth' });
+        window.scrollTo({ 
+          behavior: 'smooth',
+          top: comparisonSection.getBoundingClientRect().top + window.pageYOffset - navbarHeight + 4
+         });
       }
     }
     setScrollToSection(false);
@@ -166,12 +176,18 @@ export default function Home() {
       <nav className="flex justify-between bg-white px-20 py-8 items-center shadow fixed top-0 left-0 right-0 z-10">
         <h1 className="text-xl text-gray-800 font-bold">Compare Pro</h1>
         <div className="flex items-center">
-          <div className="flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 pt-0.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input className="ml-2 outline-none bg-transparent border-outline border border-outline rounded-lg px-2" type="text" name="search" id="search" placeholder="Filter Feature..." />
-          </div>
+          {/* Search feature */}
+          <form id='search-form' onSubmit={(e) => { e.preventDefault(); searchFeatures(searchFeature, product1.details, product2.details); }} className="flex items-center">
+            <button type='submit' className='focus:outline-none hover:bg-gray-300 p-2 rounded-lg'>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 pt-0.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+            <input className="ml-2 outline-none bg-transparent border-outline border border-outline rounded-lg px-2" 
+            type="text" name="searchfeature" id="searchfeature" placeholder="Search Feature..." 
+            value={searchFeature} onChange={(e) => setSearchFeature(e.target.value)}/>
+          </form>
+
           <ul className="px-4 flex items-center space-x-6">
             <Link href="/">
               <li className="font-semibold text-gray-700">Home</li>
@@ -217,10 +233,10 @@ export default function Home() {
       {status === 200 ? 
       <div id="results-section" className='flex flex-col items-center justify-between px-6 py-8 w-screen bg-gradient-to-b from-black to-white via-gray-500 bg-radial'>
         <div className='flex flex-col items-center justify-between p-8'>
-          <div className="grid grid-cols-2 gap-6 py-4 px-6">
+          <div id="product-cards" className="grid grid-cols-2 gap-6 py-4 px-6">
             {/* Product cards */}
             {[product1, product2].map((product, productIndex) => (
-            <div key={productIndex}>
+            <div key={productIndex} id="product-card">
               <div className='flex flex-col bg-white rounded-lg'>
                 <div className='flex flex-col rounded-lg justify-left px-6 py-1'>
                   {/* Product image */}
@@ -314,26 +330,43 @@ export default function Home() {
 
                 </div>
               </div>
-              <div className='flex flex-col bg-white rounded-lg mt-8 p-6'>
-                <table className='p-2 '>
-
-                {product.details.map((detail, index) => (
-                  <tr key={index}>
-                    {detail.split(':').map((part, partIndex) => (
-                      <td>
-                        {partIndex === 0 ? <b>{part}</b> : <span>{part}</span>}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-
-              </table>
-              </div>
             </div>
             ))}
           </div>
+
+          {/* Product Details Comparison */}
+          <div id='product-details' className='flex flex-col px-6 mt-12' style={{width: '100%'}}>
+            <div>
+              <h2 className='text-2xl text-white text-center font-semibold mb-8'>All Specifications</h2>
+            </div>
+            {Object.entries(pfeatures(product1.details, product2.details)).map(([key, value]) => (
+              <div key={key} id={key.toLowerCase()} className='flex flex-col text-center text-black bg-white px-6 py-4 mb-2 rounded-lg'>
+                <strong className={`${key.toLowerCase() === searchFeature.toLowerCase() ? 'text-green-700' : ''}`}>{key}</strong>
+                <div className="grid grid-cols-2 gap-8 py-2">
+                  <div className='flex flex-col border border-outline'>
+                    <span>{value[0]}</span>
+                  </div>
+                  <div className='flex flex-col border border-outline'>
+                    <span>{value[1]}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
         </div>
-        
+        <div className='fixed bottom-0 right-0 mb-6 mr-4 text-sm text-gray-500'>
+          <div className='flex flex-col'>
+            <button onClick={() => scrollToFeature('product-details')} className='focus:outline-none hover:underline'>
+              <BsChevronUp size={30}/>
+            </button>
+          </div>
+          <div className='flex flex-col'>
+            <button onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})} className='focus:outline-none hover:underline'>
+              <BsChevronDown size={30}/>
+            </button>
+          </div>
+        </div>
       </div> : null}
     </div>
   )
