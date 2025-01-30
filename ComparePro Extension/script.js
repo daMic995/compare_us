@@ -85,7 +85,6 @@ async function fetchComparisonData(){
             {
             method: 'GET',
             headers: {
-                'Authorization': 'compareprotest',
                 'Content-Type': 'application/json'
             }
         });

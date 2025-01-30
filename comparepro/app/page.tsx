@@ -126,13 +126,15 @@ export default function Home() {
     e.preventDefault();
 
     try {
+      // Set the API route for the comparison
+      const apiRoute = `/api/compare?product1url=${product_url1}&product2_url=${product_url2}`;
+      
       // Send a POST request to the comparison API with the product URLs as payload
-      const response = await fetch('/api/python/compare', {
-        method: 'POST',
+      const response = await fetch(apiRoute, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ product1: product_url1, product2: product_url2 }),
+        }
       });
 
       // Parse the JSON response

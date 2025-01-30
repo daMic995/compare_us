@@ -5,13 +5,14 @@ from api.compare import *
 from api.test import test_products_data
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/api/python")
 def hello_world():
     return "<p>Hello, World!</p>"
 
 
-@app.route("/api/python/compare", methods=["POST"])
+@app.route("/api/compare", methods=["POST"])
 def compare():
     """
     Compares two products and returns the comparison data.
