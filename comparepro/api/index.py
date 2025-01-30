@@ -6,6 +6,7 @@ from api.test import test_products_data
 from api.features import match_product_features
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/api/python")
 def hello_world():
