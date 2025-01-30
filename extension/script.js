@@ -64,40 +64,64 @@ function storeData(index, value) {
 
 function loadStoredData() {
     // Load the stored data if available on page load
-    chrome.storage.local.get(['product1url', 'product2url', 'message'], 
+    chrome.storage.local.get(['product1url', 'product2url', 'message', 'error'], 
         (result) => {
             p1Input.value = result.product1url === undefined ? '' : result.product1url;
             p2Input.value = result.product2url === undefined ? '' : result.product2url;
-            message.classList.add('text-green-500');
+            
+            if (result.error === true){
+                message.classList.remove('text-green-500');
+                message.classList.add('text-red-500');
+            } else {
+                message.classList.remove('text-red-500');
+                message.classList.add('text-green-500');
+            }
+
             message.textContent = result.message === undefined ? '' : result.message;
             enableCompareButtonIfBothFieldsAreFilled();
         });
 }
 
-async function fetchComparisonData(){
+async function fetchComparisonData() {
     const product1url = p1Input.value;
     const product2url = p2Input.value;
 
-    message.textContent = 'Comparing...';
+    // Display a message to the user
     message.classList.add('text-blue-500');
+    message.textContent = 'Comparing...';
 
     // Fetch data from the API
     try {
-        const response = await fetch(`http://127.0.0.1:5000/api/compare?product1url=${product1url}&product2url=${product2url}`,
-            {
+        const baseUrl = "https://compare-us-git-dev-damic995s-projects.vercel.app";
+        const response = await fetch(`${baseUrl}/api/python/compare?product1url=${product1url}&product2url=${product2url}`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             }
         });
-        const data = await response.json();
-        console.log(data.message);
 
-        chrome.storage.local.set({'message': data.message});
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        let responseMessage = data.message;
+        if (responseMessage === undefined){
+            responseMessage = 'Successful Comparison';
+        };
+        console.log(data.message);
+        console.log(data.status);
+        
+        chrome.storage.local.set({'message': responseMessage});
+        chrome.storage.local.set({'error': false});
 
     } catch (error) {
         console.error('Error fetching data:', error);
+        message.classList.add('text-red-500');
         message.textContent = 'Error fetching data';
+        chrome.storage.local.set({'message': error.message});
+        chrome.storage.local.set({'error': true});
     }
 }
 
