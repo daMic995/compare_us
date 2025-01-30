@@ -12,7 +12,7 @@ CORS(app)
 def hello_world():
     return "<p>Hello, World!</p>"
 
-@app.route("/api/compare", methods=["GET"])
+@app.route("/api/python/compare", methods=["GET"])
 def compare():
     """
     Compares two products and returns the comparison data.
