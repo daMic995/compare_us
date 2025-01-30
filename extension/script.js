@@ -4,17 +4,18 @@ const compareButton = document.getElementById('compare-button');
 const p1Button = document.getElementById('p1');
 const p2Button = document.getElementById('p2');
 const closeButton = document.getElementById('close-button');
+const message = document.getElementById('compare-message');
 
 function enableCompareButtonIfBothFieldsAreFilled() {
     try {
         // Enable the compare button if both fields are filled
         if (p1Input.value != '' && p2Input.value != '') {
-            console.log('Fields are empty!');    
+            console.log('Fields are filled!');    
             compareButton.disabled = false;
             compareButton.classList.replace('bg-gray-200', 'bg-black');
             compareButton.classList.add('hover:bg-indigo-500');
         } else {
-            console.log('Fields are filled!');    
+            console.log('Fields are empty!');    
             compareButton.disabled = true;
             compareButton.classList.replace('bg-black', 'bg-gray-200');
             compareButton.classList.remove('hover:bg-indigo-500');
@@ -63,25 +64,26 @@ function storeData(index, value) {
 
 function loadStoredData() {
     // Load the stored data if available on page load
-    chrome.storage.local.get(['product1url', 'product2url'], (result) => {
-        p1Input.value = result.product1url === undefined ? '' : result.product1url;
-        p2Input.value = result.product2url === undefined ? '' : result.product2url;
-        enableCompareButtonIfBothFieldsAreFilled();
-    });
+    chrome.storage.local.get(['product1url', 'product2url', 'message'], 
+        (result) => {
+            p1Input.value = result.product1url === undefined ? '' : result.product1url;
+            p2Input.value = result.product2url === undefined ? '' : result.product2url;
+            message.classList.add('text-green-500');
+            message.textContent = result.message === undefined ? '' : result.message;
+            enableCompareButtonIfBothFieldsAreFilled();
+        });
 }
 
 async function fetchComparisonData(){
     const product1url = p1Input.value;
     const product2url = p2Input.value;
 
-    const message = document.getElementById('compare-message');
-
     message.textContent = 'Comparing...';
     message.classList.add('text-blue-500');
 
     // Fetch data from the API
     try {
-        const response = await fetch(`https://comparepro.onrender.com/compare?product1url=${product1url}&product2url=${product2url}`,
+        const response = await fetch(`http://127.0.0.1:5000/api/compare?product1url=${product1url}&product2url=${product2url}`,
             {
             method: 'GET',
             headers: {
@@ -89,11 +91,13 @@ async function fetchComparisonData(){
             }
         });
         const data = await response.json();
-        console.log(data);
-        message.textContent = data.message;
+        console.log(data.message);
+
+        chrome.storage.local.set({'message': data.message});
+
     } catch (error) {
         console.error('Error fetching data:', error);
-        message.textContent = 'Error fetching data. Please try again.';
+        message.textContent = 'Error fetching data';
     }
 }
 

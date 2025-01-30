@@ -1,12 +1,11 @@
 from flask import Flask, jsonify, request
-from flask_cors import CORS
 
 from api.compare import *
 from api.test import test_products_data
 from api.features import match_product_features
 
 app = Flask(__name__)
-CORS(app)
+
 
 @app.route("/api/python")
 def hello_world():
@@ -56,4 +55,9 @@ def compare():
         "product1": products[0], 
         "product2": products[1], 
         "matched_features": matched_features,
+        "message": "Products compared successfully!",
         "status": 200})
+
+"""# Local Flask Development
+if __name__ == "__main__":
+    app.run(debug=True)"""
