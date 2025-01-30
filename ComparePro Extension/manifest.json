@@ -1,0 +1,27 @@
+{
+    "name": "ComparePro",
+    "version": "1.0.0",
+    "description": "ComparePro Extension for Chrome",
+    "permissions": ["storage", "activeTab", "scripting", "tabs", "windows"],
+    "manifest_version": 3,
+    "author": "Semire Olatunde-Salawu",
+    "action": {
+        "default_popup": "index.html",
+        "default_title": "ComparePro"
+    },
+    "icons":  {
+        "16": "compareprologo.png", 
+        "48": "compareprologo.png", 
+        "128": "compareprologo.png"
+    },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["script.js"]
+        }
+    ],
+    "host_permissions": [
+        "http://*/*",
+        "https://*/*"
+    ]
+}

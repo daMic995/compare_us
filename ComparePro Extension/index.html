@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComparePro</title>
+
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+</head>
+<body class="bg-gradient-to-b from-gray-100 to-black rounded-lg p-2 relative min-h-screen">
+    <nav class="fixed justify-between items-center mb-8 z-10 w-full mt-2">
+        <ul class="flex flex-row items-center">
+            <li><img src="compareprologo.ico" alt="ComparePro" class="h-8 ml-2 cursor-pointer"></li>
+            <li class="absolute top-0 right-0">
+                <i id="close-button" class="bi bi-x-circle text-red-500 text-2xl h-8 mr-4 cursor-pointer"></i>
+            </li>
+        </ul>
+    </nav>
+    
+    <main class="container mx-auto text-center items-center px-4 mt-16">
+        <h2 class="text-xl font-bold mb-4">Welcome to ComparePro</h2>
+        <div class="rounded-lg p-4 bg-white shadow">
+            <p>ComparePro is a web application for product comparison across different online stores.</p>
+            <p>And now we have an extension that allows you to compare from anywhere!</p>
+        </div>
+        
+        <div id="compare-form-container" class="mt-10 rounded-lg p-4 bg-white shadow">
+            <form id="compare-form">
+                <div id="product1" class="flex justify-center items-center mb-4">
+                    <input type="text" id="product1url" class="p-2 border border-gray-300 rounded-lg mb-2" placeholder="Product 1 URL">
+                    <i id="p1" class="bi bi-plus-circle-fill text-indigo-500 text-xl ml-2 cursor-pointer"></i>
+                </div>
+                <div id="product2" class="flex justify-center items-center mb-4">
+                    <input type="text" id="product2url" class="p-2 border border-gray-300 rounded-lg mb-2" placeholder="Product 2 URL">
+                    <i id="p2" class="bi bi-plus-circle-fill text-indigo-500 text-xl ml-2 cursor-pointer"></i>
+                </div>
+                <button id="compare-button" type="submit" class="bg-gray-200 disabled text-white py-2 px-4 rounded-lg font-bold transition duration-300 ease-in-out">
+                    Compare
+                </button>
+                <p id="compare-message" class="mt-4 text-gray-600"></p>
+            </form>
+        </div>
+
+        <div class="mt-10 mb-4 rounded-lg p-4 bg-white shadow" id="how-to-use">
+            <h3 class="text-lg font-bold mb-4">How To Use</h3>
+            <ol class="list-decimal list-inside">
+                <li>Copy the URLs of the product you want to compare</li>
+                <li>Click the Compare button to view the comparison</li>
+            </ol>
+            <ul>
+                <li class="mt-2">Hint: The <i class="bi bi-plus-circle-fill text-indigo-500"></i> button will copy the current's page URL directly</li>
+            </ul>
+            <p class="mt-4 text-gray-600">If you have any questions or feedback, please don't hesitate to contact us.</p>
+        </div>
+    </main>
+</body>
+<script type="text/javascript" src="script.js"></script>
+</html>
