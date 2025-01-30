@@ -7,19 +7,21 @@ import { BsChevronCompactLeft, BsChevronCompactRight, BsChevronUp, BsChevronDown
 import { RxDotFilled } from 'react-icons/rx';
 import StarRatings from 'react-star-ratings';
 
-import { pfeatures, searchFeatures, scrollToFeature } from './features';
-import { Input } from 'postcss';
+import { searchFeatures, scrollToFeature } from './features';
 
 export default function Home() {
   // Set up an empty comparison object
-  const comp = {title: '', currency: '', price: '', description: '', details: [''], 
-                images: [''], reviews: {count: '', rating: ''}, url: ''}
+  const comp = { title: '', currency: '', price: '', description: '', details: [''], 
+                images: [''], reviews: {count: '', rating: ''}, url: '' }
 
   // Set up state variables for product URLs and comparison results
   const [product_url1, setProduct_url1] = useState('');
   const [product_url2, setProduct_url2] = useState('');
   const [product1, setProduct1] = useState(comp);
   const [product2, setProduct2] = useState(comp);
+
+  // Set up state variable for matched features
+  const [matchedFeatures, setMatchedFeatures] = useState<{ [key: string]: [string, string] }>({});
 
   // Set up state variable for comparison status code
   const [status, setStatus] = useState<number | null>(null);
@@ -147,6 +149,9 @@ export default function Home() {
       setProduct1(data.product1);
       setProduct2(data.product2);
 
+      // Update the matched features state with the comparison results
+      setMatchedFeatures(data.matched_features);
+
       // Set scrollToSection to true after successful response
       setScrollToSection(true);
 
@@ -179,7 +184,7 @@ export default function Home() {
         <h1 className="text-xl text-gray-800 font-bold">Compare Pro</h1>
         <div className="flex items-center">
           {/* Search feature */}
-          <form id='search-form' onSubmit={(e) => { e.preventDefault(); searchFeatures(searchFeature, product1.details, product2.details); }} className="flex items-center">
+          <form id='search-form' onSubmit={(e) => { e.preventDefault(); searchFeatures(searchFeature, matchedFeatures); }} className="flex items-center">
             <button type='submit' className='focus:outline-none hover:bg-gray-300 p-2 rounded-lg'>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 pt-0.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -341,7 +346,7 @@ export default function Home() {
             <div>
               <h2 className='text-2xl text-white text-center font-semibold mb-8'>All Specifications</h2>
             </div>
-            {Object.entries(pfeatures(product1.details, product2.details)).map(([key, value]) => (
+            {Object.entries(matchedFeatures).map(([key, value]) => (
               <div key={key} id={key.toLowerCase()} className='flex flex-col text-center text-black bg-white px-6 py-4 mb-2 rounded-lg'>
                 <strong className={`${key.toLowerCase() === searchFeature.toLowerCase() ? 'text-green-700' : ''}`}>{key}</strong>
                 <div className="grid grid-cols-2 gap-8 py-2">

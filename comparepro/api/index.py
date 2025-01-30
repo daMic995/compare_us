@@ -3,6 +3,7 @@ from flask_cors import CORS
 
 from api.compare import *
 from api.test import test_products_data
+from api.features import match_product_features
 
 app = Flask(__name__)
 CORS(app)
@@ -12,7 +13,7 @@ def hello_world():
     return "<p>Hello, World!</p>"
 
 
-@app.route("/api/compare", methods=["POST"])
+@app.route("/api/compare", methods=["GET"])
 def compare():
     """
     Compares two products and returns the comparison data.
@@ -24,10 +25,9 @@ def compare():
     Returns:
         dict: The comparison data.
     """
-    data = request.json
 
-    product1 = data["product1"]
-    product2 = data["product2"]
+    product1 = request.args.get("product1url")
+    product2 = request.args.get("product2url")
 
     if product1 and product2:
         print('Products URL Received!')
@@ -50,4 +50,10 @@ def compare():
             # Add support for Best Buy
             pass"""
     
-    return jsonify({"product1": products[0], "product2": products[1], "status": 200})
+    matched_features = match_product_features(products[0]['details'], products[1]['details'])
+
+    return jsonify({
+        "product1": products[0], 
+        "product2": products[1], 
+        "matched_features": matched_features,
+        "status": 200})
