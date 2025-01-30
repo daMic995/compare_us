@@ -10,7 +10,7 @@ X_RapidAPI_Host = os.getenv('AMAZON_API_HOST')
 
 COMPARISONS = ['title', 'currency', 'price', 'description', 'details', 'images',  'reviews', 'url']
 
-def store_check(url):
+def store_check(url: str) -> tuple:
     check = ''
     search_string = url.strip("https://")
 
@@ -24,7 +24,7 @@ def store_check(url):
     return check, url
 
 
-def amzn_get_asin(url):
+def amzn_get_asin(url: str) -> str:
     """
     Extracts the Amazon Standard Identification Number (ASIN) from a given Amazon product URL.
 
@@ -40,7 +40,7 @@ def amzn_get_asin(url):
     return asin
     
 
-def amzn_get_product(product_url):
+def amzn_get_product(product_url : str):
     """
     Retrieves product data from Amazon using the provided product URL.
 

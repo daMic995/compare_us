@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 from api.compare import *
 from api.test import test_products_data
@@ -6,11 +7,9 @@ from api.features import match_product_features
 
 app = Flask(__name__)
 
-
 @app.route("/api/python")
 def hello_world():
     return "<p>Hello, World!</p>"
-
 
 @app.route("/api/compare", methods=["GET"])
 def compare():
