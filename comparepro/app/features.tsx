@@ -5,7 +5,7 @@ export function scrollToFeature(productFeature: string) {
     if (element) {
         window.scrollTo({ 
             behavior: 'smooth',
-            top: element.getBoundingClientRect().top + window.pageYOffset - navbarHeight - 8
+            top: element.getBoundingClientRect().top + window.pageYOffset - navbarHeight - 242
          });
     }
 }

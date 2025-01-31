@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React, { useState, useEffect, useRef } from 'react';
 import { BsChevronCompactLeft, BsChevronCompactRight, BsChevronUp, BsChevronDown } from 'react-icons/bs';
+import { IoExtensionPuzzleOutline } from "react-icons/io5";
 import { RxDotFilled } from 'react-icons/rx';
 import StarRatings from 'react-star-ratings';
 
@@ -180,66 +181,62 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen overflow-hidden-x">
       {/* Navbar */}
-      <nav className="flex justify-between bg-white px-20 py-8 items-center shadow fixed top-0 left-0 right-0 z-10">
-        <h1 className="text-xl text-gray-800 font-bold">Compare Pro</h1>
+      <nav className="flex justify-between bg-white py-6 sm:px-2 sm:py-6 md:px-4 md:py-6 lg:px-6 lg:py-8 items-center shadow fixed top-0 left-0 right-0 z-10">
+        <img className="ml-4 block lg:md:sm:hidden" src="/compareprologo.png" alt="Logo" width={30} height={30}/>
+        <h1 className="lg:text-xl md:text-lg sm:text-lg lg:md:sm:block hidden ml-2 text-gray-800 font-bold">Compare Pro</h1>
         <div className="flex items-center">
           {/* Search feature */}
-          <form id='search-form' onSubmit={(e) => { e.preventDefault(); searchFeatures(searchFeature, matchedFeatures); }} className="flex items-center">
+          <form id='search-form' onSubmit={(e) => { e.preventDefault(); searchFeatures(searchFeature, matchedFeatures); }} className="flex items-center mr-8">
             <button type='submit' className='focus:outline-none hover:bg-gray-300 p-2 rounded-lg'>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 pt-0.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
-            <input className="ml-2 outline-none bg-transparent border-outline border border-outline rounded-lg px-2" 
+            <input className="sm:ml-0 lg:ml-2 text-base sm:text-base md:text-base lg:text-base outline-none bg-transparent border-outline border border-outline rounded-lg px-2" 
             type="text" name="searchfeature" id="searchfeature" placeholder="Search Feature..." 
             value={searchFeature} onChange={(e) => setSearchFeature(e.target.value)}/>
           </form>
 
-          <ul className="px-4 flex items-center space-x-6">
+          <ul className="lg:px-4 md:sm:px-2 text-base flex items-center lg:space-x-6 md:sm:space-x-4 space-x-4 mr-2">
             <Link href="/">
               <li className="font-semibold text-gray-700">Home</li>
             </Link>
             <li className="font-semibold text-gray-700">API</li>
             <li>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-            </li>
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
+              <a href="https://github.com/daMic995/compare_us/tree/dev/extension" title="Chrome Extension Repository">
+                <IoExtensionPuzzleOutline className="h-6 w-6 text-gray-700"/>
+              </a>
             </li>
           </ul>
         </div>
       </nav>
       
       {/* Main section */}
-      <main className="flex flex-col items-center justify-between p-48 h-screen w-screen bg-gradient-to-b from-white to-black via-gray-500 bg-radial">
+      <main className="flex flex-col items-center justify-between px-4 py-36 sm:py-36 md:sm:px-4 md:py-36 lg:p-48 h-screen w-screen bg-gradient-to-b from-white to-black via-gray-500 bg-radial">
         <div className='p-6'>
-          <h1 className="text-4xl text-white font-bold">Side-by-Side Comparison Tool</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl text-white font-bold">Side-by-Side Comparison Tool</h1>
         </div>
-        <form className="flex flex-col items-center justify-between p-12" onSubmit={compareSubmit}>
-          <div className="grid grid-cols-2 gap-6 py-6">
-            <div className='flex flex-col'>
-              <input className="outline-none focus:outline-none focus:ring-2 focus:ring-gray-600 hover:ring-2 hover:ring-gray-600 border border-outline rounded-lg px-4 py-6 w-96" 
+        <form className="flex flex-col items-center justify-between lg:p-12 md:px-2 sm:p-4" onSubmit={compareSubmit}>
+          <div className="lg:grid lg:grid-cols-2 lg:gap-6 py-6">
+            <div className='flex flex-col lg:mb-0 mb-4'>
+              <input className="outline-none focus:outline-none focus:ring-2 focus:ring-gray-600 hover:ring-2 hover:ring-gray-600 border border-outline rounded-lg px-4 py-6 lg:w-96 w-72" 
               type="text" name="product1" id="product1" placeholder="Product 1" 
               required value={product_url1} onChange={(e) => setProduct_url1(e.target.value)}/>
             </div>
             <div className='flex flex-col'>
-              <input className="outline-none focus:outline-none focus:ring-2 focus:ring-gray-600 hover:ring-2 hover:ring-gray-600 border border-outline rounded-lg px-4 py-6 w-96" 
+              <input className="outline-none focus:outline-none focus:ring-2 focus:ring-gray-600 hover:ring-2 hover:ring-gray-600 border border-outline rounded-lg px-4 py-6 lg:w-96 w-72" 
               type="text" name="product2" id="product2" placeholder="Product 2" 
               required value={product_url2} onChange={(e) => setProduct_url2(e.target.value)}/>
             </div>
           </div>
-          <button type="submit" className="bg-black hover:bg-black/80 text-white font-bold py-5 px-8 rounded-lg focus:shadow-outline focus:outline-none">Compare</button>
+          <button type="submit" className={`${product_url1 && product_url2 ? 'bg-black hover:bg-blue-500' : 'bg-gray-300 disabled'} text-white font-bold py-5 px-8 rounded-lg focus:shadow-outline focus:outline-none`}>Compare</button>
         </form>
       </main>
 
       {/* Comparison section */}
       {status === 200 ? 
-      <div id="results-section" className='flex flex-col items-center justify-between px-6 py-8 w-screen bg-gradient-to-b from-black to-white via-gray-500 bg-radial'>
-        <div className='flex flex-col items-center justify-between p-8'>
+      <div id="results-section" className='flex flex-col items-center justify-between px-0 lg:md:sm:px-6 py-8 w-screen bg-gradient-to-b from-black to-white via-gray-500 bg-radial'>
+        <div className='flex flex-col items-center justify-between lg:md:sm:p-8'>
           <div id="product-cards" className="grid grid-cols-2 gap-6 py-4 px-6">
             {/* Product cards */}
             {[product1, product2].map((product, productIndex) => (
@@ -261,7 +258,7 @@ export default function Home() {
                     <div className='flex top-4 justify-center py-2'>
                       {product.images.map((slide, slideIndex) => (
                         <div key={slideIndex} onClick={() => goToSlide(slideIndex, productIndex)}>
-                          <a className='text-xl cursor-pointer'>
+                          <a className='text-sm lg:md:sm:text-xl cursor-pointer'>
                             <RxDotFilled/>
                           </a>
                         </div>
@@ -270,22 +267,22 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className='grid grid-cols-5 gap-6 px-6'>
+                <div className='lg:md:sm:grid lg:md:sm:grid-cols-5 lg:md:sm:gap-6 lg:md:sm:px-6 px-4'>
                   {/* Product Title and Price */}
                   <div className='flex flex-col col-span-4'>
-                    <p className='text-lg font-bold text-black'>{product.title}</p>
+                    <p className='text-sm lg:text-lg md:text-base sm:text-sm font-bold text-black'>{product.title}</p>
                   </div>
-                  <div className='flex flex-col text-right'>
+                  <div className='flex flex-col lg:md:sm:text-right text-center mt-2 lg:md:sm:mt-0'>
                     <div className='bg-black rounded-md text-center py-2'>
-                      <span className='text-white text-sm p-2'>{product.currency} {product.price}</span>
+                      <span className='text-white lg:sm:text-sm md:text-xs text-xs p-2'>{product.currency} {product.price}</span>
                     </div>
-                    <a href={product.url} className='text-white text-sm font-semibold hover:underline mt-10 py-2'>
+                    <a href={product.url} className='text-white text-sm font-semibold hover:underline lg:md:sm:mt-10 mt-2 py-2'>
                       <span className='bg-blue-500 p-2 rounded-md'>Get It</span>
                     </a>
                   </div>
                 </div>
 
-                <div className='flex flex-col rounded-lg justify-left p-6'>
+                <div className='flex flex-col rounded-lg justify-left lg:md:sm:p-6 p-2'>
 
                   <div className='flex flex-col'>
                     {/* Product Rating */}
@@ -301,12 +298,12 @@ export default function Home() {
                           starSpacing="2px"
                         />
                         </div>
-                        <div className='flex flex-col col-span-1'>
+                        <div className='flex flex-col col-span-1 lg:md:sm:py-0 py-4'>
                           <p className='text-sm text-gray-500'>{product.reviews.rating}</p>
                         </div>
-                        <div className='flex flex-col col-span-2 items-end'>
-                          <button onClick={() => showDescription(productIndex)} 
-                          className='text-sm text-gray-500 hover:underline cursor-pointer'>
+                        <div className='flex flex-col col-span-2 items-end lg:md:sm:py-0 py-2'>
+                          <button type='button' onClick={() => showDescription(productIndex)} 
+                          className='text-xs lg:md:sm:text-sm text-gray-500 hover:underline cursor-pointer'>
                             {productIndex === 0 ? showDescription1 ? 'Hide Description' : 'View Description' 
                                                 : showDescription2 ? 'Hide Description' : 'View Description'}
                           </button>                      
@@ -321,16 +318,16 @@ export default function Home() {
                       <div className='flex flex-col py-6 transition transform duration-700 ease-in-out'>
                       {/* Product Description */}
                       {product.description === "" ? 
-                        <p className='text-md text-gray-500 p-2 border border-gray-200'>No description found</p> : 
-                        <p className='text-md text-black p-2 border border-gray-200'>{product.description}</p>
+                        <p className='text-xs lg:md:sm:text-base text-gray-500 p-2 border border-gray-200'>No description found</p> : 
+                        <p className='text-xs lg:md:sm:text-base text-black p-2 border border-gray-200'>{product.description}</p>
                       }
                       </div> : null 
                   : showDescription2 ?                       
                       <div className='flex flex-col py-6 transition transform duration-700 ease-in-out'>
                       {/* Product Description */}
                       {product.description === "" ? 
-                        <p className='text-md text-gray-500 p-2 border border-gray-200'>No description found</p> : 
-                        <p className='text-md text-black p-2 border border-gray-200'>{product.description}</p>
+                        <p className='text-xs lg:md:sm:text-base text-gray-500 p-2 border border-gray-200'>No description found</p> : 
+                        <p className='text-xs lg:md:sm:text-base text-black p-2 border border-gray-200'>{product.description}</p>
                       }
                       </div> : null 
                   }
@@ -347,13 +344,13 @@ export default function Home() {
               <h2 className='text-2xl text-white text-center font-semibold mb-8'>All Specifications</h2>
             </div>
             {Object.entries(matchedFeatures).map(([key, value]) => (
-              <div key={key} id={key.toLowerCase()} className='flex flex-col text-center text-black bg-white px-6 py-4 mb-2 rounded-lg'>
-                <strong className={`${key.toLowerCase() === searchFeature.toLowerCase() ? 'text-green-700' : ''}`}>{key}</strong>
+              <div key={key} id={key.toLowerCase()} className={`flex flex-col text-sm lg:md:sm:text-base text-center ${key.toLowerCase() === searchFeature.toLowerCase() ? 'bg-blue-500 text-white' : 'bg-white text-black'}  px-6 py-4 mb-2 rounded-lg`}>
+                <strong>{key}</strong>
                 <div className="grid grid-cols-2 gap-8 py-2">
-                  <div className='flex flex-col border border-outline'>
+                  <div className='flex flex-col border border-outline rounded-lg'>
                     <span>{value[0]}</span>
                   </div>
-                  <div className='flex flex-col border border-outline'>
+                  <div className='flex flex-col border border-outline rounded-lg'>
                     <span>{value[1]}</span>
                   </div>
                 </div>
@@ -364,7 +361,7 @@ export default function Home() {
         </div>
         <div className='fixed bottom-0 right-0 mb-6 mr-4 text-sm text-gray-500'>
           <div className='flex flex-col'>
-            <button onClick={() => scrollToFeature('product-details')} className='focus:outline-none hover:underline'>
+            <button type='button' onClick={() => scrollToFeature('product-details')} className='focus:outline-none hover:underline mb-2'>
               <BsChevronUp size={30}/>
             </button>
           </div>
