@@ -12,13 +12,14 @@ COMPARISONS = ['title', 'currency', 'price', 'description', 'details', 'images',
 
 def store_check(url: str) -> tuple:
     check = ''
-    search_string = url.strip("https://")
 
-    store_name = search_string.split('/')[0]
-
-    if store_name == "www.amazon.com":
+    if not url.startswith("https"):
+        print("URL does not start with https!")
+        return None, url
+    
+    if url.startswith("https://www.amazon.com"):
         check = 'a'
-    elif store_name == "bestbuy.com":
+    else:
         check = 'b'
 
     return check, url

@@ -21,6 +21,8 @@ export default function Home() {
   const [product1, setProduct1] = useState(comp);
   const [product2, setProduct2] = useState(comp);
 
+  const[statusMessage, setStatusMessage] = useState('');
+
   // Set up state variable for matched features
   const [matchedFeatures, setMatchedFeatures] = useState<{ [key: string]: [string, string] }>({});
 
@@ -36,11 +38,32 @@ export default function Home() {
   const [showDescription2, setShowDescription2] = useState(false);
 
   // Set up state variables for image navigation
-  const [currIndex1, setCurrIndex1] = useState(0);
-  const [currIndex2, setCurrIndex2] = useState(0);
+  const [currImg1Index, setCurrImg1Index] = useState(0);
+  const [currImg2Index, setCurrImg2Index] = useState(0);
 
+  // Set up state variable for search feature
   const [searchFeature, setSearchFeature] = useState('');
 
+  // Set up state variable for search feature results
+  const [searchResults, setSearchResults] = useState<string[]>([]);
+  const [searchIndex, setSearchIndex] = useState(0);
+
+  // Function to scroll with feature list
+  const scrollWithFeatureList = (direction: number) => {
+    const maxIndex = searchResults.length - 1;
+
+    if (maxIndex > 0) {
+      if (direction === 1 && searchIndex < maxIndex) {
+        setSearchIndex(searchIndex + 1);
+        scrollToFeature(searchResults[searchIndex + 1]);
+      } else if (direction === -1 && searchIndex > 0) {
+        setSearchIndex(searchIndex- 1);
+        scrollToFeature(searchResults[searchIndex - 1]);
+      }
+    }
+  }
+
+  // Function to toggle product description display
   const showDescription = (index: number) => {
     if (index === 0) {
       setShowDescription1(!showDescription1);
@@ -48,6 +71,7 @@ export default function Home() {
       setShowDescription2(!showDescription2);
     }
   }
+
   /**
    * Navigate to the previous slide in the images list.
    * If the current index is the first one, wrap around to the last one.
@@ -59,18 +83,18 @@ export default function Home() {
     // Determine if we're navigating the first product's images
     if (proIndex === 0) {
       // Check if the current index is the first slide
-      const isFirstSlide = currIndex1 === 0;
+      const isFirstSlide = currImg1Index === 0;
       // Calculate the new index, wrapping around if necessary
-      const newIndex = isFirstSlide ? imagesList.length - 1 : currIndex1 - 1;
+      const newIndex = isFirstSlide ? imagesList.length - 1 : currImg1Index - 1;
       // Update the current index for the first product
-      setCurrIndex1(newIndex);
+      setCurrImg1Index(newIndex);
     } else {
       // Check if the current index is the first slide for the second product
-      const isFirstSlide = currIndex2 === 0;
+      const isFirstSlide = currImg2Index === 0;
       // Calculate the new index, wrapping around if necessary
-      const newIndex = isFirstSlide ? imagesList.length - 1 : currIndex2 - 1;
+      const newIndex = isFirstSlide ? imagesList.length - 1 : currImg2Index - 1;
       // Update the current index for the second product
-      setCurrIndex2(newIndex);
+      setCurrImg2Index(newIndex);
     }
   }
 
@@ -85,18 +109,18 @@ export default function Home() {
     // Determine if we're navigating the first product's images
     if (proIndex === 0) {
       // Check if the current index is the last slide
-      const isLastSlide = currIndex1 === imagesList.length - 1;
+      const isLastSlide = currImg1Index === imagesList.length - 1;
       // Calculate the new index, wrapping around if necessary
-      const newIndex = isLastSlide ? 0 : currIndex1 + 1;
+      const newIndex = isLastSlide ? 0 : currImg1Index + 1;
       // Update the current index for the first product
-      setCurrIndex1(newIndex);
+      setCurrImg1Index(newIndex);
     } else {
       // Check if the current index is the last slide for the second product
-      const isLastSlide = currIndex2 === imagesList.length - 1;
+      const isLastSlide = currImg2Index === imagesList.length - 1;
       // Calculate the new index, wrapping around if necessary
-      const newIndex = isLastSlide ? 0 : currIndex2 + 1;
+      const newIndex = isLastSlide ? 0 : currImg2Index + 1;
       // Update the current index for the second product
-      setCurrIndex2(newIndex);
+      setCurrImg2Index(newIndex);
     }
   }
 
@@ -111,10 +135,10 @@ export default function Home() {
     // Check if we're navigating the first product's images
     if (proIndex === 0) {
       // Update the current index for the first product
-      setCurrIndex1(index);
+      setCurrImg1Index(index);
     } else {
       // Update the current index for the second product
-      setCurrIndex2(index);
+      setCurrImg2Index(index);
     }
   }
 
@@ -130,14 +154,15 @@ export default function Home() {
 
     try {
       // Set the API route for the comparison
-      const apiRoute = `/api/python/compare?product1url=${product_url1}&product2_url=${product_url2}`;
+      const apiRoute = '/api/python/compare';
       
       // Send a POST request to the comparison API with the product URLs as payload
       const response = await fetch(apiRoute, {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        body: JSON.stringify({ product1url: product_url1, product2url: product_url2 }),
       });
 
       // Parse the JSON response
@@ -146,15 +171,32 @@ export default function Home() {
       // Update the status state with the response status
       setStatus(data.status);
 
-      // Update the product states with the comparison results
-      setProduct1(data.product1);
-      setProduct2(data.product2);
+      // Check if the response status is 200
+      if (status === 200){
+        console.log(data.message);
+        // Update the status message state with the response message
+        setStatusMessage(data.message)
+        // Update the product states with the comparison results
+        setProduct1(data.product1);
+        setProduct2(data.product2);
 
-      // Update the matched features state with the comparison results
-      setMatchedFeatures(data.matched_features);
+        // Update the matched features state with the comparison results
+        setMatchedFeatures(data.matched_features);
 
-      // Set scrollToSection to true after successful response
-      setScrollToSection(true);
+        // Set scrollToSection to true after successful response
+        setScrollToSection(true);
+      }
+      
+      // Check if the response status is 400
+      else if (status === 400){
+        // Update the status message state with the response message
+        setStatusMessage(data.message);
+      }
+      else {
+        // Update the status message state with the response message
+        setStatusMessage('An error occurred. Please try again.');
+      }
+
 
     } catch (error) {
       console.error('Error comparing products:', error);
@@ -186,7 +228,7 @@ export default function Home() {
         <h1 className="lg:text-xl md:text-lg sm:text-lg lg:md:sm:block hidden ml-2 text-gray-800 font-bold">Compare Pro</h1>
         <div className="flex items-center">
           {/* Search feature */}
-          <form id='search-form' onSubmit={(e) => { e.preventDefault(); searchFeatures(searchFeature, matchedFeatures); }} className="flex items-center mr-8">
+          <form id='search-form' onSubmit={(e) => { e.preventDefault(); setSearchResults(searchFeatures(searchFeature, matchedFeatures)); setSearchIndex(0); }} className="flex items-center mr-8">
             <button type='submit' className='focus:outline-none hover:bg-gray-300 p-2 rounded-lg'>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 pt-0.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -203,7 +245,9 @@ export default function Home() {
             </Link>
             <li className="font-semibold text-gray-700">API</li>
             <li>
-              <a href="https://github.com/daMic995/compare_us/tree/dev/extension" title="Chrome Extension Repository">
+              {/* Chrome Extension Link 
+              https://github.com/daMic995/compare_us/tree/dev/extension*/}
+              <a href="#" title="Chrome Extension Repository">
                 <IoExtensionPuzzleOutline className="h-6 w-6 text-gray-700"/>
               </a>
             </li>
@@ -229,8 +273,13 @@ export default function Home() {
               required value={product_url2} onChange={(e) => setProduct_url2(e.target.value)}/>
             </div>
           </div>
-          <button type="submit" className={`${product_url1 && product_url2 ? 'bg-black hover:bg-blue-500' : 'bg-gray-300 disabled'} text-white font-bold py-5 px-8 rounded-lg focus:shadow-outline focus:outline-none`}>Compare</button>
+          <button type="submit" className={`${product_url1 && product_url2 ? 'bg-black hover:bg-blue-500' : 'bg-gray-300 disabled'} text-white font-bold py-5 px-8 rounded-lg focus:shadow-outline focus:outline-none transition duration-300 ease-in-out`}>Compare</button>
         </form>
+
+        {status === 200 ? <p className="text-green-500 text-base">{statusMessage}</p> : null}
+        {status === 400 ? <p className="text-red-500 text-base">{statusMessage}</p> : null}
+
+        <p className="mt-4 text-gray-400 text-sm">Powered by ComparePro</p>
       </main>
 
       {/* Comparison section */}
@@ -245,7 +294,7 @@ export default function Home() {
                 <div className='flex flex-col rounded-lg justify-left px-6 py-1'>
                   {/* Product image */}
                   <div className='flex flex-col py-12 max-w-[500px] h-[500px] w-full m-auto relative group'>
-                    <div style={{backgroundImage: `url(${product.images[productIndex=== 0 ? currIndex1 : currIndex2]})`, 
+                    <div style={{backgroundImage: `url(${product.images[productIndex=== 0 ? currImg1Index : currImg2Index]})`, 
                     backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', width: '100%', height: '100%', position: 'relative'}}></div>
                     {/* Left arrow */}
                     <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] left-5 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
@@ -344,7 +393,10 @@ export default function Home() {
               <h2 className='text-2xl text-white text-center font-semibold mb-8'>All Specifications</h2>
             </div>
             {Object.entries(matchedFeatures).map(([key, value]) => (
-              <div key={key} id={key.toLowerCase()} className={`flex flex-col text-sm lg:md:sm:text-base text-center ${key.toLowerCase() === searchFeature.toLowerCase() ? 'bg-blue-500 text-white' : 'bg-white text-black'}  px-6 py-4 mb-2 rounded-lg`}>
+              <div key={key} id={key.toLowerCase()} 
+              className={`flex flex-col text-sm lg:md:sm:text-base text-center 
+              ${key.toLowerCase() === searchResults[searchIndex] ? 'bg-blue-500 text-white' : 'bg-white text-black'}  
+              px-6 py-4 mb-2 rounded-lg transition duration-300 ease-in-out`}>
                 <strong>{key}</strong>
                 <div className="grid grid-cols-2 gap-8 py-2">
                   <div className='flex flex-col border border-outline rounded-lg'>
@@ -361,12 +413,13 @@ export default function Home() {
         </div>
         <div className='fixed bottom-0 right-0 mb-6 mr-4 text-sm text-gray-500'>
           <div className='flex flex-col'>
-            <button type='button' onClick={() => scrollToFeature('product-details')} className='focus:outline-none hover:underline mb-2'>
+            <button type='button' onClick={() => scrollWithFeatureList(-1) } className='focus:outline-none hover:text-indigo-700 hover:animate-bounce transition duration-300 ease-in-out mb-2'>
               <BsChevronUp size={30}/>
             </button>
           </div>
           <div className='flex flex-col'>
-            <button onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})} className='focus:outline-none hover:underline'>
+            {/* window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'}) */}
+            <button type='button' onClick={() => scrollWithFeatureList(1) } className='focus:outline-none hover:text-indigo-500 hover:animate-bounce transition duration-300 ease-in-out'>
               <BsChevronDown size={30}/>
             </button>
           </div>
