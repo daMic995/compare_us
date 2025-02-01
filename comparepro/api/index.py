@@ -1,8 +1,8 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+#import json
 
 from api.compare import *
-from api.test import test_products_data
 from api.features import match_product_features
 
 app = Flask(__name__)
@@ -12,7 +12,7 @@ CORS(app)
 def hello_world():
     return "<p>Hello, World!</p>"
 
-@app.route("/api/python/compare", methods=["GET"])
+@app.route("/api/python/compare", methods=["POST"])
 def compare():
     """
     Compares two products and returns the comparison data.
@@ -25,18 +25,35 @@ def compare():
         dict: The comparison data.
     """
 
-    product1 = request.args.get("product1url")
-    product2 = request.args.get("product2url")
+    data = request.get_json()
+
+    product1 = data("product1url")
+    product2 = data("product2url")
+
+    print('Product1 URL: ', product1)
+    print('Product2 URL: ', product2)
 
     if product1 and product2:
         print('Products URL Received!')
 
+    """
+    # Load test products data
+    with open('api/data/test_products_data.json', 'r') as f:
+        test_products_data = json.load(f)
+
     products = test_products_data
 
-    """products = [product1, product2]
-    
+    """
+    products = [product1, product2]
+        
     for p in products:
+        if p == None:
+            print('P: ', p)
+            print('Invalid/Empty product URL!')
+            return jsonify({"message": "Invalid product URL!", "status": 400})
+            
         [check, url] = store_check(p)
+            
         if check == 'a':
             # Get the product data from Amazon
             pro = amzn_get_product(url)
@@ -47,8 +64,12 @@ def compare():
             products[products.index(p)] = pro
         elif check == 'b':
             # Add support for Best Buy
-            pass"""
-    
+            pass
+        else:
+            # Invalid product URL
+            print('Invalid product URL!')
+            return jsonify({"message": "Invalid product URL!", "status": 400})
+        
     matched_features = match_product_features(products[0]['details'], products[1]['details'])
 
     return jsonify({
