@@ -41,9 +41,8 @@ def compare():
     with open('api/data/test_products_data.json', 'r') as f:
         test_products_data = json.load(f)
 
-    products = test_products_data
-
     """
+
     products = [product1, product2]
         
     for p in products:
@@ -52,7 +51,13 @@ def compare():
             print('Invalid/Empty product URL!')
             return jsonify({"message": "Invalid product URL!", "status": 400})
             
+        if p == None:
+            print('P: ', p)
+            print('Invalid/Empty product URL!')
+            return jsonify({"message": "Invalid product URL!", "status": 400})
+            
         [check, url] = store_check(p)
+            
             
         if check == 'a':
             # Get the product data from Amazon
