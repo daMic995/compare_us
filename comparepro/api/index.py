@@ -30,9 +30,6 @@ def compare():
     product1 = data["product1url"]
     product2 = data["product2url"]
 
-    print('Product1 URL: ', product1)
-    print('Product2 URL: ', product2)
-
     if product1 and product2:
         print('Products URL Received!')
 

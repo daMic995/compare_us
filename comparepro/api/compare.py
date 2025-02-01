@@ -36,7 +36,14 @@ def amzn_get_asin(url: str) -> str:
     search_string = url.strip("https://")
 
     # Split the search string by '/' and extract the ASIN, which is the fourth element
-    asin = search_string.split('/')[3][:10]
+    isdp = 'dp' == search_string.split('/')[2]
+
+    if isdp:
+        asin = search_string.split('/')[3][:10]
+    else:
+        asin = search_string.split('/')[2][:10]
+
+    print(asin)
 
     return asin
     
@@ -68,14 +75,15 @@ def amzn_get_product(product_url : str):
         response = requests.get(api_url, headers=headers, params=querystring)
 
         if response.json():
+            print("Response from Amazon API: ", response.json())
             # Extract the product data from the API response
             product = response.json()['results'][0]
 
-            print("Product Data from Amazon: ", product)
+            print("Product Data from Amazon API: ", product)
             return product
 
         else:
-            print(response.raise_for_status())
+            print(response.status_code)
             return None
 
     except requests.exceptions.RequestException as e:
