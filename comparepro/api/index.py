@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-#import json
+import json
 
 from api.compare import *
 from api.features import match_product_features
@@ -39,34 +39,32 @@ def compare():
     """
     # Load test products data
     with open('api/data/test_products_data.json', 'r') as f:
-        test_products_data = json.load(f)
+        products = json.load(f)
 
     """
-
     products = [product1, product2]
-        
+
     for p in products:
         if p == None:
-            print('P: ', p)
-            print('Invalid/Empty product URL!')
-            return jsonify({"message": "Invalid product URL!", "status": 400})
-            
-        if p == None:
-            print('P: ', p)
             print('Invalid/Empty product URL!')
             return jsonify({"message": "Invalid product URL!", "status": 400})
             
         [check, url] = store_check(p)
             
-            
         if check == 'a':
             # Get the product data from Amazon
             pro = amzn_get_product(url)
+            
+            if pro == None:
+                print('Product data from Amazon returned None!')
+                return jsonify({"message": "Amazon API response error!", "status": 400})
+            
             # Construct the valid product data for comparison
             pro = comparator(pro)
 
             # Replace the original product URL with the product data
             products[products.index(p)] = pro
+
         elif check == 'b':
             # Add support for Best Buy
             pass

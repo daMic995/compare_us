@@ -63,13 +63,24 @@ def amzn_get_product(product_url : str):
         "x-rapidapi-host": X_RapidAPI_Host
     }
 
-    # Perform the API request
-    response = requests.get(api_url, headers=headers, params=querystring)
+    try:
+        # Perform the API request
+        response = requests.get(api_url, headers=headers, params=querystring)
 
-    # Extract the product data from the API response
-    product = response.json()['results'][0]
+        if response.json():
+            # Extract the product data from the API response
+            product = response.json()['results'][0]
 
-    return product
+            print("Product Data from Amazon: ", product)
+            return product
+
+        else:
+            print(response.raise_for_status())
+            return None
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching product data: {e}")
+        return None
 
 
 def comparator(product):
