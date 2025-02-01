@@ -276,8 +276,7 @@ export default function Home() {
           <button type="submit" className={`${product_url1 && product_url2 ? 'bg-black hover:bg-blue-500' : 'bg-gray-300 disabled'} text-white font-bold py-5 px-8 rounded-lg focus:shadow-outline focus:outline-none transition duration-300 ease-in-out`}>Compare</button>
         </form>
 
-        {status === 200 ? <p className="text-green-500 text-base">{statusMessage}</p> : null}
-        {status === 400 ? <p className="text-red-500 text-base">{statusMessage}</p> : null}
+        {status && status === 200 ? <p className="text-green-500 text-base">{statusMessage}</p> : <p className="text-red-500 text-base">{statusMessage}</p>}
 
         <p className="mt-4 text-gray-400 text-sm">Powered by ComparePro</p>
       </main>

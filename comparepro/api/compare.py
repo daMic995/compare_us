@@ -75,20 +75,21 @@ def amzn_get_product(product_url : str):
         response = requests.get(api_url, headers=headers, params=querystring)
 
         if response.json():
-            print("Response from Amazon API: ", response.json())
+            if not response.json()['results']:
+                return {"message": "API quota reached", "status": 429}
+            
             # Extract the product data from the API response
             product = response.json()['results'][0]
 
-            print("Product Data from Amazon API: ", product)
-            return product
+            return {"message": "API request successful", "status": response.status_code,  "product": product}
 
         else:
-            print(response.status_code)
+            {"message": "API request failed", "status": response.status_code}
             return None
 
     except requests.exceptions.RequestException as e:
         print(f"Error fetching product data: {e}")
-        return None
+        return {"message": f"Error fetching product data: {e}", "status": 500}
 
 
 def comparator(product):

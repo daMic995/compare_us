@@ -8,6 +8,8 @@ from api.features import match_product_features
 app = Flask(__name__)
 CORS(app)
 
+TEST_MODE = True
+
 @app.route("/api/python")
 def hello_world():
     return "<p>Hello, World!</p>"
@@ -33,43 +35,45 @@ def compare():
     if product1 and product2:
         print('Products URL Received!')
 
-    """
-    # Load test products data
-    with open('api/data/test_products_data.json', 'r') as f:
-        products = json.load(f)
+    if TEST_MODE:
+        # Load test products data
+        with open('./api/data/test_products_data.json', 'r') as f:
+            products = json.load(f)
+            print('Test products data loaded!')
 
-    """
-    products = [product1, product2]
+    else:
+        # Load real products data
+        products = [product1, product2]
 
-    for p in products:
-        if p == None:
-            print('Invalid/Empty product URL!')
-            return jsonify({"message": "Invalid product URL!", "status": 400})
-            
-        [check, url] = store_check(p)
-            
-        if check == 'a':
-            # Get the product data from Amazon
-            pro = amzn_get_product(url)
-            
-            if pro == None:
-                print('Product data from Amazon returned None!')
-                return jsonify({"message": "Amazon API response error!", "status": 400})
-            
-            # Construct the valid product data for comparison
-            pro = comparator(pro)
+        for p in products:
+            if p == None:
+                print('Invalid/Empty product URL!')
+                return jsonify({"message": "Invalid product URL!", "status": 400})
+                
+            [check, url] = store_check(p)
+                
+            if check == 'a':
+                # Get the product data from Amazon
+                pro = amzn_get_product(url)
+                
+                if pro["status"] != 200:
+                    return jsonify(pro)
+                
+                # Construct the valid product data for comparison
+                pro = comparator(pro)
 
-            # Replace the original product URL with the product data
-            products[products.index(p)] = pro
+                # Replace the original product URL with the product data
+                products[products.index(p)] = pro
 
-        elif check == 'b':
-            # Add support for Best Buy
-            pass
-        else:
-            # Invalid product URL
-            print('Invalid product URL!')
-            return jsonify({"message": "Invalid product URL!", "status": 400})
+            elif check == 'b':
+                # Add support for Best Buy
+                pass
+            else:
+                # Invalid product URL
+                print('Invalid product URL!')
+                return jsonify({"message": "Invalid product URL!", "status": 400})
         
+    # Group products by features
     matched_features = match_product_features(products[0]['details'], products[1]['details'])
 
     return jsonify({
