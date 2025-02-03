@@ -172,7 +172,7 @@ export default function Home() {
       setStatus(data.status);
 
       // Check if the response status is 200
-      if (status === 200){
+      if (data.status === 200){
         console.log(data.message);
         // Update the status message state with the response message
         setStatusMessage(data.message)
@@ -188,17 +188,14 @@ export default function Home() {
       }
       
       // Check if the response status is 400
-      else if (status === 400){
+      else if (data.status === 400){
         // Update the status message state with the response message
         setStatusMessage(data.message);
       }
-      else {
-        // Update the status message state with the response message
-        setStatusMessage('An error occurred. Please try again.');
-      }
-
 
     } catch (error) {
+      // Update the status message state with the response message
+      setStatusMessage('An error occurred. Please try again.');
       console.error('Error comparing products:', error);
       setStatus(404);
     }
