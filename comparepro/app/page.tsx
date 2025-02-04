@@ -3,10 +3,13 @@ import { on } from 'events';
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useState, useEffect, useRef } from 'react';
+
 import { BsChevronCompactLeft, BsChevronCompactRight, BsChevronUp, BsChevronDown } from 'react-icons/bs';
 import { IoExtensionPuzzleOutline } from "react-icons/io5";
+import { LiaCommentsSolid } from "react-icons/lia";
 import { RxDotFilled } from 'react-icons/rx';
 import StarRatings from 'react-star-ratings';
+
 
 import { searchFeatures, scrollToFeature } from './features';
 
@@ -51,16 +54,29 @@ export default function Home() {
   // Function to scroll with feature list
   const scrollWithFeatureList = (direction: number) => {
     const maxIndex = searchResults.length - 1;
+    console.log(searchFeature);
 
-    if (maxIndex > 0) {
-      if (direction === 1 && searchIndex < maxIndex) {
-        setSearchIndex(searchIndex + 1);
-        scrollToFeature(searchResults[searchIndex + 1]);
-      } else if (direction === -1 && searchIndex > 0) {
-        setSearchIndex(searchIndex- 1);
-        scrollToFeature(searchResults[searchIndex - 1]);
+    // Scroll to the next or previous feature
+    if (searchFeature !== '') {
+      if (maxIndex > 0) {
+        if (direction === 1 && searchIndex < maxIndex) {
+          setSearchIndex(searchIndex + 1);
+          scrollToFeature(searchResults[searchIndex + 1]);
+        } else if (direction === -1 && searchIndex > 0) {
+          setSearchIndex(searchIndex- 1);
+          scrollToFeature(searchResults[searchIndex - 1]);
+        }
+      }      
+    }
+    else {
+      if (direction === 1) {
+        scrollToFeature('footer-section');
+      }
+      else if (direction === -1) {
+        scrollToFeature('product-details-section');
       }
     }
+
   }
 
   // Function to toggle product description display
@@ -221,8 +237,12 @@ export default function Home() {
     <div className="flex flex-col min-h-screen overflow-hidden-x">
       {/* Navbar */}
       <nav className="flex justify-between bg-white py-6 sm:px-2 sm:py-6 md:px-4 md:py-6 lg:px-6 lg:py-8 items-center shadow fixed top-0 left-0 right-0 z-10">
-        <img className="ml-4 block lg:md:sm:hidden" src="/compareprologo.png" alt="Logo" width={30} height={30}/>
-        <h1 className="lg:text-xl md:text-lg sm:text-lg lg:md:sm:block hidden ml-2 text-gray-800 font-bold">Compare Pro</h1>
+        {/* Logo */}
+        <div className="flex flex-col ml-2 lg:md:flex-row items-center">
+          <img className="block lg:md:sm:hidden" src="/compareprologo.png" alt="Logo" width={30} height={30}/>
+          <h1 className="lg:text-xl md:text-lg sm:text-lg lg:md:sm:block hidden text-gray-800 font-bold">Compare Pro</h1>
+          <img className='block lg:md:ml-2' src="/beta_icon.png" alt="Logo" width={25} height={25}/>
+        </div>
         <div className="flex items-center">
           {/* Search feature */}
           <form id='search-form' onSubmit={(e) => { e.preventDefault(); setSearchResults(searchFeatures(searchFeature, matchedFeatures)); setSearchIndex(0); }} className="flex items-center mr-8">
@@ -237,8 +257,8 @@ export default function Home() {
           </form>
 
           <ul className="lg:px-4 md:sm:px-2 text-base flex items-center lg:space-x-6 md:sm:space-x-4 space-x-4 mr-2">
-            <Link href="/">
-              <li className="font-semibold text-gray-700">Home</li>
+            <Link href="/feedback">
+              <LiaCommentsSolid className="h-6 w-6 text-gray-700" />
             </Link>
             <li className="font-semibold text-gray-700">API</li>
             <li>
@@ -255,7 +275,7 @@ export default function Home() {
       {/* Main section */}
       <main className="flex flex-col items-center justify-between px-4 py-36 sm:py-36 md:sm:px-4 md:py-36 lg:p-48 h-screen w-screen bg-gradient-to-b from-white to-black via-gray-500 bg-radial">
         <div className='p-6'>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl text-white font-bold">Side-by-Side Comparison Tool</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl text-white font-bold">Side-by-Side Comparison</h1>
         </div>
         <form className="flex flex-col items-center justify-between lg:p-12 md:px-2 sm:p-4" onSubmit={compareSubmit}>
           <div className="lg:grid lg:grid-cols-2 lg:gap-6 py-6">
@@ -273,16 +293,19 @@ export default function Home() {
           <button type="submit" className={`${product_url1 && product_url2 ? 'bg-black hover:bg-blue-500' : 'bg-gray-300 disabled'} text-white font-bold py-5 px-8 rounded-lg focus:shadow-outline focus:outline-none transition duration-300 ease-in-out`}>Compare</button>
         </form>
 
-        {status && status === 200 ? <p className="text-green-500 text-base">{statusMessage}</p> : <p className="text-red-500 text-base">{statusMessage}</p>}
+        <div className='text-sm mt-2 lg:md:sm:text-sm'>
+        {!status && <p className="text-blue-600">Only Amazon products are supported at this time. More coming soon!</p>}
+        {status && status === 200 ? <p className="text-green-500">{statusMessage}</p> : <p className="text-red-500">{statusMessage}</p>}
+        </div>
 
         <p className="mt-4 text-gray-400 text-sm">Powered by ComparePro</p>
       </main>
 
       {/* Comparison section */}
       {status === 200 ? 
-      <div id="results-section" className='flex flex-col items-center justify-between px-0 lg:md:sm:px-6 py-8 w-screen bg-gradient-to-b from-black to-white via-gray-500 bg-radial'>
+      <div id="results-section" className='flex flex-col items-center justify-between px-0 lg:md:sm:px-6 lg:md:sm:py-6 w-screen bg-gradient-to-b from-black to-white via-gray-500 bg-radial'>
         <div className='flex flex-col items-center justify-between lg:md:sm:p-8'>
-          <div id="product-cards" className="grid grid-cols-2 gap-6 py-4 px-6">
+          <div id="product-cards" className="grid grid-cols-2 gap-6 lg:md:sm:py-4 px-6">
             {/* Product cards */}
             {[product1, product2].map((product, productIndex) => (
             <div key={productIndex} id="product-card">
@@ -293,11 +316,11 @@ export default function Home() {
                     <div style={{backgroundImage: `url(${product.images[productIndex=== 0 ? currImg1Index : currImg2Index]})`, 
                     backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', width: '100%', height: '100%', position: 'relative'}}></div>
                     {/* Left arrow */}
-                    <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] left-5 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
+                    <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] left-0 lg:md:left-5 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
                       <BsChevronCompactLeft onClick={() => prevSlide(product.images, productIndex)} size={30}/>
                     </div>
                     {/* Right arrow */}
-                    <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] right-5 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
+                    <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] right-0 lg:md:right-5 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
                       <BsChevronCompactRight onClick={() => nextSlide(product.images, productIndex)} size={30}/>
                     </div>
                     <div className='flex top-4 justify-center py-2'>
@@ -318,7 +341,7 @@ export default function Home() {
                     <p className='text-sm lg:text-lg md:text-base sm:text-sm font-bold text-black'>{product.title}</p>
                   </div>
                   <div className='flex flex-col lg:md:sm:text-right text-center mt-2 lg:md:sm:mt-0'>
-                    <div className='bg-black rounded-md text-center py-2'>
+                    <div id='product-price' className='bg-black rounded-md text-center py-2'>
                       <span className='text-white lg:sm:text-sm md:text-xs text-xs p-2'>{product.currency} {product.price}</span>
                     </div>
                     <a href={product.url} className='text-white text-sm font-semibold hover:underline lg:md:sm:mt-10 mt-2 py-2'>
@@ -384,7 +407,7 @@ export default function Home() {
           </div>
 
           {/* Product Details Comparison */}
-          <div id='product-details' className='flex flex-col px-6 mt-12' style={{width: '100%'}}>
+          <div id='product-details-section' className='flex flex-col px-6 mt-12' style={{width: '100%'}}>
             <div>
               <h2 className='text-2xl text-white text-center font-semibold mb-8'>All Specifications</h2>
             </div>
@@ -421,6 +444,15 @@ export default function Home() {
           </div>
         </div>
       </div> : null}
+      {/* Footer */}
+      <footer id='footer-section' className='bg-white shadow flex flex-col items-center justify-center p-4 bottom-0 w-full'>
+        <p className="mt-4 text-gray-400 text-sm mb-2">Powered by</p>
+        <div className="flex flex-row items-center mb-2">
+          <img className="block" src="/compareprologo.png" alt="Logo" width={30} height={30}/>
+          <img className='block ml-2' src="/beta_icon.png" alt="Logo" width={25} height={25}/>
+        </div>
+      </footer>
+
     </div>
   )
 }

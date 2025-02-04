@@ -37,7 +37,7 @@ def compare():
 
     if TEST_MODE:
         # Load test products data
-        with open('./api/data/test_products_data.json', 'r') as f:
+        with open('./api/data/amazon/test_products_data.json', 'r') as f:
             products = json.load(f)
             print('Test products data loaded!')
 
@@ -67,7 +67,11 @@ def compare():
 
             elif check == 'b':
                 # Add support for Best Buy
-                pass
+                return jsonify({"message": "Best Buy not supported yet!", "status": 400})
+
+            elif check == 'w':
+                # Add support for Walmart
+                return jsonify({"message": "Walmart not supported yet!", "status": 400})
             else:
                 # Invalid product URL
                 print('Invalid product URL!')

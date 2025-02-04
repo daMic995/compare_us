@@ -14,7 +14,7 @@ export function scrollToFeature(productFeature: string) {
         // Scroll the window to the feature element, adjusting for the navbar and additional offset
         window.scrollTo({ 
             behavior: 'smooth',
-            top: element.getBoundingClientRect().top + window.pageYOffset - navbarHeight - 242
+            top: element.getBoundingClientRect().top + window.pageYOffset - navbarHeight - 45
         });
     }
 }

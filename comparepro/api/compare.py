@@ -19,8 +19,10 @@ def store_check(url: str) -> tuple:
     
     if url.startswith("https://www.amazon.com"):
         check = 'a'
-    else:
+    elif url.startswith("https://www.bestbuy.com"):
         check = 'b'
+    elif url.startswith("https://www.walmart.com"):
+        check = 'w'
 
     return check, url
 

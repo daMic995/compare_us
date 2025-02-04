@@ -1,0 +1,368 @@
+{
+    "search_metadata":
+    {
+    "id":
+    "67a1320a9f4f89ba2edba1a5",
+    "status":
+    "Success",
+    "json_endpoint":
+    "https://serpapi.com/searches/e678522e1059bcdd/67a1320a9f4f89ba2edba1a5.json",
+    "created_at":
+    "2025-02-03 21:15:54 UTC",
+    "processed_at":
+    "2025-02-03 21:15:54 UTC",
+    "walmart_product_url":
+    "https://www.walmart.com/ip/5395269813?",
+    "raw_html_file":
+    "https://serpapi.com/searches/e678522e1059bcdd/67a1320a9f4f89ba2edba1a5.html",
+    "prettify_html_file":
+    "https://serpapi.com/searches/e678522e1059bcdd/67a1320a9f4f89ba2edba1a5.prettify",
+    "total_time_taken":
+    1.98
+    },
+    "search_parameters":
+    {
+    "product_id":
+    "5395269813",
+    "engine":
+    "walmart_product",
+    "device":
+    "desktop"
+    },
+    "search_information":
+    {
+    "location":
+    {
+    "postal_code":
+    "95829",
+    "province_code":
+    "CA",
+    "city":
+    "Sacramento",
+    "store_id":
+    "3081"
+    }
+    },
+    "product_result":
+    {
+    "us_item_id":
+    "5395269813",
+    "product_id":
+    "1OPXII9J2THO",
+    "title":
+    "Samsung Galaxy S24 Plus 5G SM-S926B/DS 256GB 12GB RAM DUAL SIM (Global Model) Factory Unlocked GSM (Onyx Black)",
+    "short_description_html":
+    "Samsung Galaxy S24 Plus 5G SM-S926B/DS 256GB 12GB RAM DUAL SIM (Global Model) Factory Unlocked GSM (Onyx Black)<br><br>Includes with this order: 1. Smartphone ' 2. Data Cable ' 3. Ejection Pin<br>* Galaxy S24 Plus does not include travel adapter.<br><br>About this item<br>NOTE: Global Version. This device is globally unlocked and ready to be used with your preferred Carrier. SIM CARD NOT INCLUDED. Please confirm device compatibility with your service provider before placing your order. Supported Network About this item<br>About this item<br>CIRCLE &amp; SEARCH¹ IN A SNAP: What's your favorite influencer wearing? Where'd they go on vacation? What's that word mean? Don't try to describe it - use Circle to Search¹ with Google to get the answer; With S24 Series, circle it on your screen and learn more<br>REAL EASY, REAL-TIME TRANSLATIONS: Speak foreign languages on the spot with Live Translate²; Unlock the power of convenient communication with near real-time voice translations, right through your Samsung Phone app<br>NOTE SMARTER, NOT HARDER: Focus on capturing your notes and spend less time perfecting them; Note Assist³ will summarize, format, and even translate them for you; All of your notes are organized neatly so that you can find what you need<br>MORE WOW, LESS WORK: Turn every photo into a post-worthy masterpiece; Move or remove objects; Fill in empty space; Simply snap a pic and take it from great to jaw-dropping with Generative Edit<br>CAPTURE. SHARE. IMPRESS: Share more of life's most share-worthy moments in natural, true-to-life color with 50MP camera<br>OUR MOST POWERFUL GALAXY SMARTPHONE YET: Jump seamlessly between apps without the wait and see content in high quality with our fastest processor yet, Snapdragon 8 Gen 3 for Galaxy⁵<br>PUT YOUR BEST TEXT FORWARD: Say the right thing at the right time in no time with Chat Assist⁶; Get real-time tone suggestions to make your writing sound more professional or conversational; Plus, make typos a thing of the past<br>GO BIGGER. GO BRIGHTER: See it all on the bigger⁷ and brighter screen of S24+; Look at your pics outside without squinting or looking for shade; And wind down before bed with your screen at just the right brightness, thanks to Eye Comfort Shield<br>CAPTURE ALL THE ACTION &amp; YOUR REACTION: Capture your favorite artist on the main cam while you record yourself singing along with the selfie camera; With Dual Recording, it's easy to get all the action - and all the reactions",
+    "detailed_description_html":
+    "<ul> <li> <ul> <li>Galaxy AI, circle to Search with Google, Ai Hels you translate on your next phone call. Phot Assist has AI-enhanced HDR previews &amp; AI-powered editing.</li> </ul></li> <li> <ul> <li>CIRCLE &amp; SEARCH¹ IN A SNAP: What’s your favorite influencer wearing? Where’d they go on vacation? What’s that word mean? Don’t try to describe it — use Circle to Search¹ with Google to get the answer; With S24 Series, circle it on your screen and learn more</li> </ul></li> <li> <ul> <li>REAL EASY, REAL-TIME TRANSLATIONS: Speak foreign languages on the spot with Live Translate²; Unlock the power of convenient communication with near real-time voice translations, right through your Samsung Phone app</li> </ul></li> <li> <ul> <li>NOTE SMARTER, NOT HARDER: Focus on capturing your notes and spend less time perfecting them; Note Assist³ will summarize, format, and even translate them for you; All of your notes are organized neatly so that you can find what you need</li> </ul></li> <li> <ul> <li>MORE WOW, LESS WORK: Turn every photo into a post-worthy masterpiece; Move or remove objects; Fill in empty space; Simply snap a pic and take it from great to jaw-dropping with Generative Edit</li> </ul></li> <li> <ul> <li>CAPTURE. SHARE. IMPRESS: Share more of life’s most share-worthy moments in natural, true-to-life color with 50MP camera</li> </ul></li> <li> <ul> <li>OUR MOST POWERFUL GALAXY SMARTPHONE YET: Jump seamlessly between apps without the wait and see content in high quality with our fastest processor yet, Snapdragon 8 Gen 3 for Galaxy</li> </ul></li> </ul>",
+    "categories":
+    [
+    {
+    "name":
+    "Cell Phones",
+    "url":
+    "https://www.walmart.com/cp/cell-phones/1105910"
+    },
+    {
+    "name":
+    "Shop Phones by Brand",
+    "url":
+    "https://www.walmart.com/cp/shop-phones-by-brand/7551331"
+    },
+    {
+    "name":
+    "Samsung Galaxy Phones",
+    "url":
+    "https://www.walmart.com/cp/samsung-galaxy-phones/1986562"
+    },
+    {
+    "name":
+    "Samsung Galaxy Phones by Model",
+    "url":
+    "https://www.walmart.com/cp/samsung-galaxy-phones-by-model/1231202"
+    },
+    {
+    "name":
+    "Galaxy S Series",
+    "url":
+    "https://www.walmart.com/cp/galaxy-s-series/1562593"
+    },
+    {
+    "name":
+    "Galaxy S24",
+    "url":
+    "https://www.walmart.com/cp/galaxy-s24/8056739"
+    }
+    ],
+    "seller_id":
+    "39888DC07F734E0B954FB3F97637F822",
+    "seller_name":
+    "Spice Mobile",
+    "specification_highlights":
+    [
+    {
+    "key":
+    "Processor Brand",
+    "value":
+    "Snapdragon",
+    "display_name":
+    "Processor Brand"
+    },
+    {
+    "key":
+    "Phone Feature",
+    "value":
+    "Fingerprint (under display, ultrasonic), Accelerometer, Gyro, Proximity, Compass, Barometer",
+    "display_name":
+    "Phone Feature"
+    },
+    {
+    "key":
+    "Resolution",
+    "value":
+    "1080x2340",
+    "display_name":
+    "Resolution"
+    },
+    {
+    "key":
+    "Brand",
+    "value":
+    "Samsung",
+    "display_name":
+    "Brand"
+    },
+    {
+    "key":
+    "Cell Phone Type",
+    "value":
+    "Smart Phones",
+    "display_name":
+    "Cell Phone Type"
+    },
+    {
+    "key":
+    "Cell Phone Service Provider",
+    "value":
+    "GSM Unlocked",
+    "display_name":
+    "Cell Phone Service Provider"
+    },
+    {
+    "key":
+    "Screen Size",
+    "value":
+    "6.2 in",
+    "display_name":
+    "Screen Size"
+    },
+    {
+    "key":
+    "Front-Facing Camera Megapixels",
+    "value":
+    "12 MP",
+    "display_name":
+    "Front-Facing Camera Megapixels"
+    },
+    {
+    "key":
+    "Rear-Facing Camera Megapixels",
+    "value":
+    "50 MP",
+    "display_name":
+    "Rear-Facing Camera Megapixels"
+    },
+    {
+    "key":
+    "Model Name",
+    "value":
+    "Galaxy S24",
+    "display_name":
+    "Model Name"
+    },
+    {
+    "key":
+    "Condition",
+    "value":
+    "New",
+    "display_name":
+    "Condition"
+    },
+    {
+    "key":
+    "Manufacturer",
+    "value":
+    "Samsung",
+    "display_name":
+    "Manufacturer"
+    },
+    {
+    "key":
+    "Cellular Network Technology",
+    "value":
+    "GSM",
+    "display_name":
+    "Cellular Network Technology"
+    },
+    {
+    "key":
+    "RAM Memory",
+    "value":
+    "8 GB",
+    "display_name":
+    "RAM Memory"
+    },
+    {
+    "key":
+    "Features",
+    "value":
+    "Fingerprint (under display, ultrasonic), Accelerometer, Gyro, Proximity, Compass, Barometer",
+    "display_name":
+    "Features"
+    },
+    {
+    "key":
+    "Manufacturer Part Number",
+    "value":
+    "SM-S921B/DS",
+    "display_name":
+    "Manufacturer Part Number"
+    },
+    {
+    "key":
+    "Color",
+    "value":
+    "Cobalt Violet",
+    "display_name":
+    "Color"
+    }
+    ],
+    "manufacture_number":
+    "SM-S921B/DS",
+    "product_type_id":
+    "702",
+    "product_type":
+    "Cell Phones",
+    "manufacturer":
+    "Samsung",
+    "product_page_url":
+    "https://www.walmart.com/ip/Samsung-Galaxy-S24-5G-SM-S921B-DS-256GB-8GB-RAM-DUAL-SIM-Global-Model-Factory-Unlocked-GSM-Onyx-Black/5395269813",
+    "price_map":
+    {
+    "price":
+    750.9,
+    "currency":
+    "USD"
+    },
+    "min_quantity":
+    1,
+    "max_quantity":
+    7,
+    "in_stock":
+    true,
+    "images":
+    [
+    "https://i5.walmartimages.com/seo/Samsung-Galaxy-S24-5G-SM-S921B-DS-256GB-8GB-RAM-DUAL-SIM-Global-Model-Factory-Unlocked-GSM-Onyx-Black_cde0c004-f6e6-400a-baef-ac47773b7a06.d8559c7cb53691197367f44ef4415555.jpeg",
+    "https://i5.walmartimages.com/asr/6061fcc3-4237-4c73-a288-02e3275dbfa3.027901721a4ddac6cec780a0d38efbbd.jpeg"
+    ],
+    "reviews":
+    4,
+    "rating":
+    4.8,
+    "offer_id":
+    "EEE291A532AA3E90ADD92A8D6B767A19",
+    "offer_type":
+    "ONLINE_ONLY",
+    "offers":
+    [
+    {
+    "seller_id":
+    "39888DC07F734E0B954FB3F97637F822",
+    "catalog_seller_id":
+    101579394,
+    "seller_name":
+    "Suresh Enterprises INC",
+    "seller_display_name":
+    "Spice Mobile",
+    "price":
+    750.9
+    }
+    ],
+    "shipping_price":
+    0,
+    "delivery_option":
+    {
+    "arrival_date":
+    1739228340000,
+    "display_arrival_date":
+    "2025-02-10T22:59:00.000Z"
+    },
+    "early_access_event":
+    false,
+    "walmart_plus_member":
+    false
+    },
+    "reviews_results":
+    {
+    "ratings":
+    [
+    {
+    "stars":
+    1,
+    "count":
+    0
+    },
+    {
+    "stars":
+    2,
+    "count":
+    0
+    },
+    {
+    "stars":
+    3,
+    "count":
+    0
+    },
+    {
+    "stars":
+    4,
+    "count":
+    1
+    },
+    {
+    "stars":
+    5,
+    "count":
+    3
+    }
+    ],
+    "reviews":
+    {
+    "rating":
+    4.8,
+    "count":
+    4,
+    "customer_reviews":
+    [
+    {
+    "title":
+    "Can't go wrong with Samsung",
+    "text":
+    "I honestly cannot give a through review on this item since I never used it. The 23 model is smaller than I realized so I sent this back. I'm currently awaiting Black Friday to get a deal on the 24 Plus. The phone does look good and I've heard nothing but positive things about Samsung phones overall so happy shopping!",
+    "rating":
+    4,
+    "review_submission_time":
+    "11/28/2024",
+    "user_nickname":
+    "Adam",
+    "customer_type":
+    [
+    "VerifiedPurchaser",
+    "PrizeIncentive"
+    ]
+    }
+    ]
+    }
+    }
+}
