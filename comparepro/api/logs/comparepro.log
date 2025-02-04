@@ -1,0 +1,5 @@
+2025-02-04 22:07:44,386 - index - INFO - User tried to compare products from Walmart
+2025-02-04 22:09:02,044 - index - ERROR - User tried to compare products from Best Buy
+2025-02-04 22:11:55,464 - index - INFO - User tried to compare products from www.microcenter.com
+2025-02-04 23:05:08,274 - index - ERROR - Exception on /api/python/compare [POST]
+2025-02-04 23:10:57,227 - index - ERROR - API quota reached

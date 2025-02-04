@@ -6,6 +6,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { BsChevronCompactLeft, BsChevronCompactRight, BsChevronUp, BsChevronDown } from 'react-icons/bs';
 import { IoExtensionPuzzleOutline } from "react-icons/io5";
+import { TbApi } from "react-icons/tb";
 import { LiaCommentsSolid } from "react-icons/lia";
 import { RxDotFilled } from 'react-icons/rx';
 import StarRatings from 'react-star-ratings';
@@ -186,6 +187,7 @@ export default function Home() {
       
       // Update the status state with the response status
       setStatus(data.status);
+      console.log(data);
 
       // Check if the response status is 200
       if (data.status === 200){
@@ -204,7 +206,7 @@ export default function Home() {
       }
       
       // Check if the response status is 400
-      else if (data.status === 400){
+      else {
         // Update the status message state with the response message
         setStatusMessage(data.message);
       }
@@ -257,14 +259,20 @@ export default function Home() {
           </form>
 
           <ul className="lg:px-4 md:sm:px-2 text-base flex items-center lg:space-x-6 md:sm:space-x-4 space-x-4 mr-2">
-            <Link href="/feedback">
-              <LiaCommentsSolid className="h-6 w-6 text-gray-700" />
-            </Link>
-            <li className="font-semibold text-gray-700">API</li>
+            <li className="font-semibold text-gray-700">
+              <Link href="/feedback" title="Feedback Form">
+                <LiaCommentsSolid className="h-6 w-6 text-gray-700" />
+              </Link>
+            </li>
+            <li className="font-semibold text-gray-700">
+              <Link href="#" title="API Documentation">
+                <TbApi className="h-7 w-7 text-gray-700" />
+              </Link>
+            </li>
             <li>
               {/* Chrome Extension Link 
               https://github.com/daMic995/compare_us/tree/dev/extension*/}
-              <a href="#" title="Chrome Extension Repository">
+              <a href="#" title="Chrome Extension">
                 <IoExtensionPuzzleOutline className="h-6 w-6 text-gray-700"/>
               </a>
             </li>
@@ -362,7 +370,7 @@ export default function Home() {
                           starRatedColor="gold"
                           numberOfStars={5}
                           name='rating'
-                          starDimension="20px"
+                          starDimension={window.innerWidth < 200 ? "5px" : "15px"}
                           starSpacing="2px"
                         />
                         </div>

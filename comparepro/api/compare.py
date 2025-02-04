@@ -17,14 +17,9 @@ def store_check(url: str) -> tuple:
         print("URL does not start with https!")
         return None, url
     
-    if url.startswith("https://www.amazon.com"):
-        check = 'a'
-    elif url.startswith("https://www.bestbuy.com"):
-        check = 'b'
-    elif url.startswith("https://www.walmart.com"):
-        check = 'w'
+    store = url.strip("https://").split("/")[0].split(".")[1]
 
-    return check, url
+    return store, url
 
 
 def amzn_get_asin(url: str) -> str:
@@ -44,8 +39,6 @@ def amzn_get_asin(url: str) -> str:
         asin = search_string.split('/')[3][:10]
     else:
         asin = search_string.split('/')[2][:10]
-
-    print(asin)
 
     return asin
     
@@ -76,18 +69,22 @@ def amzn_get_product(product_url : str):
         # Perform the API request
         response = requests.get(api_url, headers=headers, params=querystring)
 
+        # Check if the request was successful
         if response.json():
-            if not response.json()['results']:
+            # Check if the API quota has been reached
+            if not response.json().get('results'):
+                print('API quota reached')
                 return {"message": "API quota reached", "status": 429}
             
             # Extract the product data from the API response
             product = response.json()['results'][0]
-
-            return {"message": "API request successful", "status": response.status_code,  "product": product}
+            print('API request successful')
+            return {"message": "API request successful", "status": response.status_code,  
+                    "product": product}
 
         else:
-            {"message": "API request failed", "status": response.status_code}
-            return None
+            print('API request failed')
+            return {"message": "API request failed", "status": response.status_code}
 
     except requests.exceptions.RequestException as e:
         print(f"Error fetching product data: {e}")
