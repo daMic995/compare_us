@@ -10,7 +10,7 @@ from api.features import match_product_features
 app = Flask(__name__)
 CORS(app)
 
-TEST_MODE = False
+TEST_MODE = True
 
 def setup_logger():
     # Setup file handler
@@ -57,9 +57,13 @@ def compare():
 
     if TEST_MODE:
         # Load test products data
-        with open('./api/data/amazon/test_products_data.json', 'r') as f:
-            products = json.load(f)
-            print('Test products data loaded!')
+        with open('./api/data/amazon/test_data2.json', 'r') as f:
+            test_product1 = json.load(f)
+
+        with open('./api/data/walmart/test_data2.json', 'r') as f:
+            test_product2 = json.load(f)
+
+        products = [test_product1, test_product2]
 
     else:
         # Load real products data
@@ -81,7 +85,7 @@ def compare():
                     return jsonify(pro)
                 
                 # Construct the valid product data for comparison
-                pro = comparator(pro["product"])
+                pro = amzn_comparator(pro["product"])
 
                 # Replace the original product URL with the product data
                 products[products.index(p)] = pro

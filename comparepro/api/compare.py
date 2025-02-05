@@ -91,7 +91,7 @@ def amzn_get_product(product_url : str):
         return {"message": f"Error fetching product data: {e}", "status": 500}
 
 
-def comparator(product):
+def amzn_comparator(product):
     """
     Compares the product data to the comparison criteria and 
     constructs a dictionary with the valid comparisons.
@@ -109,5 +109,52 @@ def comparator(product):
                 # Construct the valid dictionary with the comparison
                 # criteria as the keys and the product data as the values
                 valid[f'{c}'] = v
+
+    return valid
+
+def walmart_comparator(product):
+    """
+    Compares the product data to the comparison criteria and 
+    constructs a dictionary with the valid comparisons.
+
+    Args:
+        product (dict): The product data.
+
+    Returns:
+        dict: A dictionary with the valid product data.
+    """
+    valid = { "details": [] }
+
+    # Iterate over the product data
+    for key, value in product.items():
+        # Check if the key is in the comparison criteria
+        if key in COMPARISONS:
+            # Construct the valid dictionary with the comparison
+            # criteria as the keys and the product data as the values
+            valid[key] = value
+
+        # Check if the key is "short_description_html"
+        elif key == "short_description_html":
+            # Add the value to the "description" key in the valid dictionary
+            valid['description'] = value
+
+        # Check if the key is "specification_highlights"
+        elif key == "specification_highlights":
+            # Iterate over the specification highlights
+            for spec in value:
+                # Add the specification highlight to the "details" list
+                # in the valid dictionary
+                valid['details'].append(f"{spec['key']}: {spec['value']}")
+
+        # Check if the key is "price_map"
+        elif key == "price_map":
+            # Add the currency and price to the valid dictionary
+            valid['currency'] = value["currency"]
+            valid['price'] = value["price"]
+
+        # Check if the key is "product_page_url"
+        elif key == "product_page_url":
+            # Add the url to the valid dictionary
+            valid['url'] = value
 
     return valid

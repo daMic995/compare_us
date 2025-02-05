@@ -11,6 +11,10 @@ import { LiaCommentsSolid } from "react-icons/lia";
 import { RxDotFilled } from 'react-icons/rx';
 import StarRatings from 'react-star-ratings';
 
+import { TbBrandWalmart } from "react-icons/tb";
+import { FaAmazon } from "react-icons/fa";
+
+
 
 import { searchFeatures, scrollToFeature } from './features';
 
@@ -54,7 +58,7 @@ export default function Home() {
 
   // Function to scroll with feature list
   const scrollWithFeatureList = (direction: number) => {
-    const maxIndex = searchResults.length - 1;
+    const maxIndex = searchResults.length;
     console.log(searchFeature);
 
     // Scroll to the next or previous feature
@@ -197,7 +201,6 @@ export default function Home() {
         // Update the product states with the comparison results
         setProduct1(data.product1);
         setProduct2(data.product2);
-
         // Update the matched features state with the comparison results
         setMatchedFeatures(data.matched_features);
 
@@ -243,7 +246,7 @@ export default function Home() {
         <div className="flex flex-col ml-2 lg:md:flex-row items-center">
           <img className="block lg:md:sm:hidden" src="/compareprologo.png" alt="Logo" width={30} height={30}/>
           <h1 className="lg:text-xl md:text-lg sm:text-lg lg:md:sm:block hidden text-gray-800 font-bold">Compare Pro</h1>
-          <img className='block lg:md:ml-2' src="/beta_icon.png" alt="Logo" width={25} height={25}/>
+          <img className='block lg:md:ml-2' src="/beta_icon.png" alt="Logo" width={35} height={25}/>
         </div>
         <div className="flex items-center">
           {/* Search feature */}
@@ -301,8 +304,12 @@ export default function Home() {
           <button type="submit" className={`${product_url1 && product_url2 ? 'bg-black hover:bg-blue-500' : 'bg-gray-300 disabled'} text-white font-bold py-5 px-8 rounded-lg focus:shadow-outline focus:outline-none transition duration-300 ease-in-out`}>Compare</button>
         </form>
 
-        <div className='text-sm mt-2 lg:md:sm:text-sm'>
-        {!status && <p className="text-blue-600">Only Amazon products are supported at this time. More coming soon!</p>}
+        <div className='text-xs mt-4 lg:md:sm:text-sm'>
+        {!status && 
+          <span className="text-gray-400">Only 
+            <FaAmazon size={20} className='inline shadow m-2'/>and 
+            <TbBrandWalmart size={22} className='inline shadow m-2'/>products are supported at this time. More coming soon!
+          </span>}
         {status && status === 200 ? <p className="text-green-500">{statusMessage}</p> : <p className="text-red-500">{statusMessage}</p>}
         </div>
 
@@ -324,11 +331,11 @@ export default function Home() {
                     <div style={{backgroundImage: `url(${product.images[productIndex=== 0 ? currImg1Index : currImg2Index]})`, 
                     backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', width: '100%', height: '100%', position: 'relative'}}></div>
                     {/* Left arrow */}
-                    <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] left-0 lg:md:left-5 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
+                    <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] left-0 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
                       <BsChevronCompactLeft onClick={() => prevSlide(product.images, productIndex)} size={30}/>
                     </div>
                     {/* Right arrow */}
-                    <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] right-0 lg:md:right-5 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
+                    <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] right-0 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
                       <BsChevronCompactRight onClick={() => nextSlide(product.images, productIndex)} size={30}/>
                     </div>
                     <div className='flex top-4 justify-center py-2'>
@@ -457,7 +464,7 @@ export default function Home() {
         <p className="mt-4 text-gray-400 text-sm mb-2">Powered by</p>
         <div className="flex flex-row items-center mb-2">
           <img className="block" src="/compareprologo.png" alt="Logo" width={30} height={30}/>
-          <img className='block ml-2' src="/beta_icon.png" alt="Logo" width={25} height={25}/>
+          <img className='block ml-2' src="/beta_icon.png" alt="Logo" width={35} height={25}/>
         </div>
       </footer>
 
