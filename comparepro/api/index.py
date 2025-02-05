@@ -15,7 +15,7 @@ TEST_MODE = True
 def setup_logger():
     # Setup file handler
     file_handler = RotatingFileHandler(
-        './api/logs/comparepro.log', 
+        './tmp/logs/comparepro.log', 
         maxBytes=100000, backupCount=5)
 
     # Setup format for logs
