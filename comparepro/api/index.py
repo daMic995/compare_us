@@ -1,33 +1,41 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import logging
-from logging.handlers import RotatingFileHandler
+import sentry_sdk
+from sentry_sdk.integrations.logging import LoggingIntegration
+
 import json
 
 from api.compare import *
 from api.features import match_product_features
 
+
 app = Flask(__name__)
 CORS(app)
 
-TEST_MODE = True
+TEST_MODE = False
 
-def setup_logger():
-    # Setup file handler
-    file_handler = RotatingFileHandler(
-        './tmp/logs/comparepro.log', 
-        maxBytes=100000, backupCount=5)
+def setup_logger() -> None:
+    """
+    Sets up the logger for the application.
 
-    # Setup format for logs
-    formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    file_handler.setFormatter(formatter)
+    It sets the logging level to INFO and configures Sentry to capture
+    errors and exceptions.
+    """
+    logging.basicConfig(level=logging.INFO, 
+                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    # Setup application logger
-    app.logger.addHandler(file_handler)
-    app.logger.setLevel(logging.INFO)
+    # Initialize Sentry
+    sentry_sdk.init(
+        dsn="https://eb65b450d62fe2bb96a37f0d8d5f71f4@o4508770057584640.ingest.us.sentry.io/4508770067021824",
+        # Add data like request headers and IP for users,
+        # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+        send_default_pii=True,
+        integrations=[LoggingIntegration(level=logging.INFO,
+                                        event_level=logging.INFO)],
+    )
 
-# Initialize logger
+# Initialize logger and Sentry
 setup_logger()
 
 @app.route("/api/python")
@@ -81,7 +89,7 @@ def compare():
                 pro = amzn_get_product(url)
                 
                 if pro["status"] != 200:
-                    app.logger.error(pro["message"])
+                    logging.error(pro["message"])
                     return jsonify(pro)
                 
                 # Construct the valid product data for comparison
@@ -90,24 +98,34 @@ def compare():
                 # Replace the original product URL with the product data
                 products[products.index(p)] = pro
 
-                app.logger.info("Product data received from Amazon API!")
-
             elif store == 'bestbuy':
                 # Add support for Best Buy
                 # Log action and return message
-                app.logger.info("User tried to compare products from Best Buy")
+                logging.info("User tried to compare products from Best Buy")
                 return jsonify({"message": "Best Buy not supported yet!", "status": 400})
 
             elif store == 'walmart':
-                # Add support for Walmart
-                # Log action and return message
-                app.logger.info("User tried to compare products from Walmart")
-                return jsonify({"message": "Walmart not supported yet!", "status": 400})
+                # Get the product data from Walmart
+                pro = wlmrt_get_product(url)
+                
+                if pro["status"] != 200:
+                    logging.error(pro["message"])
+                    return jsonify(pro)
+                
+                # Construct the valid product data for comparison
+                pro = wlmrt_comparator(pro["product"])
+
+                # Replace the original product URL with the product data
+                products[products.index(p)] = pro
+            
+            elif store == None:
+                # Invalid URL
+                # Return message
+                return jsonify({"message": "Invalid URL!", "status": 400})
             else:
                 # Unsupported store
                 # Log action and return message
-                app.logger.info(f"User tried to compare products from {store}")
-                
+                logging.info(f"User tried to compare products from {store}")
                 return jsonify({"message": "Store not supported yet!", "status": 400})
         
     # Group products by features
@@ -123,7 +141,8 @@ def compare():
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-
+    print(e)
+    logging.error(e)
     return jsonify({"message": "Internal server error!", "status": 500})
 
 """# Local Flask Development

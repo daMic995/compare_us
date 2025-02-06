@@ -1,6 +1,7 @@
 import os
 import requests
 from dotenv import load_dotenv
+from serpapi import GoogleSearch
 
 load_dotenv()
 
@@ -8,13 +9,15 @@ load_dotenv()
 X_RapidAPI_Key = os.getenv('AMAZON_API_KEY')
 X_RapidAPI_Host = os.getenv('AMAZON_API_HOST')
 
+# Google API (SerpAPI) - Walmart
+SERPI_API_KEY = os.getenv('SERPI_API_KEY')
+
+# List of fields to compare
 COMPARISONS = ['title', 'currency', 'price', 'description', 'details', 'images',  'reviews', 'url']
 
 def store_check(url: str) -> tuple:
-    check = ''
 
     if not url.startswith("https"):
-        print("URL does not start with https!")
         return None, url
     
     store = url.strip("https://").split("/")[0].split(".")[1]
@@ -73,21 +76,17 @@ def amzn_get_product(product_url : str):
         if response.json():
             # Check if the API quota has been reached
             if not response.json().get('results'):
-                print('API quota reached')
                 return {"message": "API quota reached", "status": 429}
             
             # Extract the product data from the API response
             product = response.json()['results'][0]
-            print('API request successful')
             return {"message": "API request successful", "status": response.status_code,  
                     "product": product}
 
         else:
-            print('API request failed')
             return {"message": "API request failed", "status": response.status_code}
 
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching product data: {e}")
         return {"message": f"Error fetching product data: {e}", "status": 500}
 
 
@@ -112,7 +111,64 @@ def amzn_comparator(product):
 
     return valid
 
-def walmart_comparator(product):
+
+def wlmrt_get_pid(url: str) -> str:
+    """
+    Extracts the Walmart product ID from a given URL.
+
+    Args:
+        url (str): The URL of the Walmart product.
+
+    Returns:
+        str: The product ID of the Walmart product.
+    """
+    # Remove the "https://" prefix from the URL to get the search string
+    search_string = url.strip("https://")
+
+    # Split the search string by '/' and extract the product ID, which is the third element
+    product_id = search_string.split('/')[3].split('?')[0]
+    return product_id
+    
+
+def wlmrt_get_product(product_url: str) -> dict:
+    """
+    Retrieves the product data from the Walmart API using the provided product URL.
+
+    Args:
+        product_url (str): The URL of the Walmart product.
+
+    Returns:
+        dict: A dictionary containing the product data and a status message.
+    """
+    # Extract the Walmart product ID from the provided URL
+    wlmrt_pid = wlmrt_get_pid(product_url)
+
+    # Construct the API request parameters
+    params = {
+        "engine": "walmart_product",
+        "product_id": wlmrt_pid,
+        "api_key": SERPI_API_KEY
+    }
+
+    try:
+        # Perform the API request
+        search = GoogleSearch(params)
+        results = search.get_dict()
+        
+        # Check if the request was successful
+        if results['search_metadata']['status'] != 'Success':
+            return {"message": "API request failed", "status": 500}
+
+        # Return the product data and a success message
+        return {"message": "API request successful", "status": 200,  
+                "product": results['product_result']}
+    
+    except Exception as e:
+        # Return an error message and a 500 status code if an error occurred
+        return {"message": f"Error fetching product data: {e}", "status": 500}
+
+
+def wlmrt_comparator(product):
     """
     Compares the product data to the comparison criteria and 
     constructs a dictionary with the valid comparisons.
@@ -123,38 +179,44 @@ def walmart_comparator(product):
     Returns:
         dict: A dictionary with the valid product data.
     """
-    valid = { "details": [] }
+    # Initialize the valid dictionary with an empty details list
+    valid = {"details": []}
 
     # Iterate over the product data
     for key, value in product.items():
         # Check if the key is in the comparison criteria
         if key in COMPARISONS:
-            # Construct the valid dictionary with the comparison
-            # criteria as the keys and the product data as the values
+            # Handle the reviews key separately to structure its content
+            if key == "reviews":
+                valid[key] = {
+                    'count': value,
+                    'rating': product["rating"] if product.get("rating") else 0
+                }
+                continue
+            # Add the value to the valid dictionary for matched keys
             valid[key] = value
 
-        # Check if the key is "short_description_html"
+        # Handle the short_description_html key
         elif key == "short_description_html":
-            # Add the value to the "description" key in the valid dictionary
+            # Populate the description field in the valid dictionary
             valid['description'] = value
 
-        # Check if the key is "specification_highlights"
+        # Handle the specification_highlights key
         elif key == "specification_highlights":
-            # Iterate over the specification highlights
+            # Add each specification to the details list with formatted text
             for spec in value:
-                # Add the specification highlight to the "details" list
-                # in the valid dictionary
-                valid['details'].append(f"{spec['key']}: {spec['value']}")
+                valid['details'].append(f"{spec['key']}: {spec['value'].replace(':', '-')}")
 
-        # Check if the key is "price_map"
+        # Handle the price_map key
         elif key == "price_map":
-            # Add the currency and price to the valid dictionary
+            # Extract currency and price information
             valid['currency'] = value["currency"]
             valid['price'] = value["price"]
 
-        # Check if the key is "product_page_url"
+        # Handle the product_page_url key
         elif key == "product_page_url":
-            # Add the url to the valid dictionary
+            # Store the product URL
             valid['url'] = value
 
+    # Return the constructed dictionary with valid product data
     return valid

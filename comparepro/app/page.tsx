@@ -382,7 +382,7 @@ export default function Home() {
                         />
                         </div>
                         <div className='flex flex-col col-span-1 lg:md:sm:py-0 py-4'>
-                          <p className='text-sm text-gray-500'>{product.reviews.rating}</p>
+                          <p className='text-sm text-gray-500'>{parseFloat(product.reviews.rating).toFixed(1)}</p>
                         </div>
                         <div className='flex flex-col col-span-2 items-end lg:md:sm:py-0 py-2'>
                           <button type='button' onClick={() => showDescription(productIndex)} 
