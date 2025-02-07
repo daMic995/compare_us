@@ -14,9 +14,8 @@ import StarRatings from 'react-star-ratings';
 import { TbBrandWalmart } from "react-icons/tb";
 import { FaAmazon } from "react-icons/fa";
 
-
-
 import { searchFeatures, scrollToFeature } from './features';
+import StoreCheck from './storeCheck';
 
 export default function Home() {
   // Set up an empty comparison object
@@ -222,6 +221,7 @@ export default function Home() {
     }
   };
 
+  // Scroll Effect
   useEffect(() => {
     if (scrollToSection) {
       const navbarHeight = document.querySelector("nav")?.clientHeight || 0;
@@ -288,17 +288,19 @@ export default function Home() {
         <div className='p-6'>
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl text-white font-bold">Side-by-Side Comparison</h1>
         </div>
-        <form className="flex flex-col items-center justify-between lg:p-12 md:px-2 sm:p-4" onSubmit={compareSubmit}>
+        <form className="flex flex-col items-center justify-center lg:p-12 md:px-2 sm:p-4" onSubmit={compareSubmit}>
           <div className="lg:grid lg:grid-cols-2 lg:gap-6 py-6">
-            <div className='flex flex-col lg:mb-0 mb-4'>
-              <input className="outline-none focus:outline-none focus:ring-2 focus:ring-gray-600 hover:ring-2 hover:ring-gray-600 border border-outline rounded-lg px-4 py-6 lg:w-96 w-72" 
+            <div className='flex items-center lg:mb-0 mb-4'>
+              {StoreCheck(product_url1) /* Render the store icon*/}
+              <input className={`${StoreCheck(product_url1) ? "ml-4" : "ml-0"} outline-none focus:outline-none focus:ring-2 focus:ring-gray-600 hover:ring-2 hover:ring-gray-600 border border-outline rounded-lg px-4 py-6 lg:w-96 w-72`}
               type="text" name="product1" id="product1" placeholder="Product 1" 
               required value={product_url1} onChange={(e) => setProduct_url1(e.target.value)}/>
             </div>
-            <div className='flex flex-col'>
-              <input className="outline-none focus:outline-none focus:ring-2 focus:ring-gray-600 hover:ring-2 hover:ring-gray-600 border border-outline rounded-lg px-4 py-6 lg:w-96 w-72" 
+            <div className='flex items-center lg:mb-0 mb-4'>
+              <input className={`${StoreCheck(product_url2) ? "mr-4" : "mr-0"} outline-none focus:outline-none focus:ring-2 focus:ring-gray-600 hover:ring-2 hover:ring-gray-600 border border-outline rounded-lg px-4 py-6 lg:w-96 w-72`}
               type="text" name="product2" id="product2" placeholder="Product 2" 
               required value={product_url2} onChange={(e) => setProduct_url2(e.target.value)}/>
+              {StoreCheck(product_url2) /* Render the store icon*/}
             </div>
           </div>
           <button type="submit" className={`${product_url1 && product_url2 ? 'bg-black hover:bg-blue-500' : 'bg-gray-300 disabled'} text-white font-bold py-5 px-8 rounded-lg focus:shadow-outline focus:outline-none transition duration-300 ease-in-out`}>Compare</button>
