@@ -1,19 +1,35 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session, redirect, url_for
 from flask_cors import CORS
+from upstash_redis import Redis
+
+from dotenv import load_dotenv
+import json
+import uuid
+from datetime import timedelta
+
 import logging
 import sentry_sdk
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-import json
-
 from api.compare import *
 from api.features import match_product_features
 
+load_dotenv()
+redis_url = os.getenv('UPSTASH_REDIS_REST_URL')
+token = os.getenv('UPSTASH_REDIS_REST_TOKEN')
+
+# Configure Redis
+upstash_redis_client = Redis(url="https://sought-husky-11990.upstash.io", token=token)
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('REDIS_SECRET_KEY')
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_PERMANENT'] = False
+
+# Enable CORS
 CORS(app)
 
-TEST_MODE = False
+TEST_MODE = True
 
 def setup_logger() -> None:
     """
@@ -38,9 +54,41 @@ def setup_logger() -> None:
 # Initialize logger and Sentry
 setup_logger()
 
+
 @app.route("/api/python")
-def hello_world():
-    return "<p>Hello, World!</p>"
+def index():
+    curr_comparisons = upstash_redis_client.get(f'{session['user_id']}:no_of_comparisons')
+
+    return jsonify({"message": "Welcome to the ComparePro API!",
+                    "available": curr_comparisons,
+                    "status": 200})
+
+
+@app.route('/api/python/generate_user_id', methods=['GET'])
+def generate_user_id():
+    """
+    Generates a unique user ID and assigns it to the session.
+
+    Returns the user ID.
+    """
+    # Configure session id
+    user_id = str(uuid.uuid4())
+    session['user_id'] = user_id
+
+    try:
+        # Check if the user ID already exists in Redis
+        if not upstash_redis_client.exists(f'{session["user_id"]}:no_of_comparisons'):
+            # Set the number of available comparisons to 5
+            upstash_redis_client.set(f'{session["user_id"]}:no_of_comparisons', 5)
+        
+    except Exception as e:
+        # Log any errors
+        logging.error(e)
+        return jsonify({"message": "Something went wrong!", "status": 500})
+    
+    # Return the user ID
+    return jsonify({'user_id': session['user_id']})
+
 
 @app.route("/api/python/compare", methods=["POST"])
 def compare():
@@ -57,11 +105,20 @@ def compare():
 
     data = request.json
 
+    # Get product URLs and user ID
     product1 = data["product1url"]
     product2 = data["product2url"]
+    c_user_id = data["user_id"]
 
-    if product1 and product2:
-        print('Products URL Received!')
+    # Get available comparisons
+    available = int(upstash_redis_client.get(f'{c_user_id}:no_of_comparisons'))
+
+    # Check if there are available comparisons
+    if available <= 0:
+        # Return no available comparisons
+        return jsonify({"message": "You have exhausted your comparisons!", 
+                        "available": available,
+                        "status": 403})
 
     if TEST_MODE:
         # Load test products data
@@ -131,19 +188,40 @@ def compare():
     # Group products by features
     matched_features = match_product_features(products[0]['details'], products[1]['details'])
 
+    # Update available comparisons in Redis
+    upstash_redis_client.set(f'{c_user_id}:no_of_comparisons', available-1)
+
     return jsonify({
         "product1": products[0], 
         "product2": products[1], 
         "matched_features": matched_features,
         "message": "Products compared successfully!",
+        "available": available-1,
         "status": 200})
+
+
+@app.route("/api/python/reset")
+def reset():
+    upstash_redis_client.set(f'{session['user_id']}:no_of_comparisons', 5)
+    return redirect(url_for('index'))
+
+"""
+@app.route("/api/python/decrement")
+def decrement():
+    curr_comparisons = int(upstash_redis_client.get('no_of_comparisons'))
+    print('Before decrement', curr_comparisons)
+
+    upstash_redis_client.set('no_of_comparisons', curr_comparisons-1)
+    print('After decrement', upstash_redis_client.get('no_of_comparisons'))
+    return redirect(url_for('index'))"""
 
 
 @app.errorhandler(Exception)
 def handle_exception(e):
     print(e)
     logging.error(e)
-    return jsonify({"message": "Internal server error!", "status": 500})
+    return jsonify({"message": "Internal server error!", 
+                    "status": 500})
 
 """# Local Flask Development
 if __name__ == "__main__":

@@ -1,6 +1,4 @@
 "use client"
-import { on } from 'events';
-import Image from 'next/image'
 import Link from 'next/link'
 import React, { useState, useEffect, useRef } from 'react';
 
@@ -14,10 +12,25 @@ import StarRatings from 'react-star-ratings';
 import { TbBrandWalmart } from "react-icons/tb";
 import { FaAmazon } from "react-icons/fa";
 
-import { searchFeatures, scrollToFeature } from './features';
-import StoreCheck from './storeCheck';
+import { searchFeatures, scrollToFeature } from '../components/features';
+import StoreCheck from '../components/storeCheck';
+import PopupCounter from '../components/popup';
+import getUserId from '../components/getUserId';
 
 export default function Home() {
+
+  // Check if user ID is in local storage
+  if (!('user_id' in localStorage)){
+    // Set up state variable for user ID
+    useEffect(() => {
+      getUserId().then(user_id => {
+        if (user_id) {
+          localStorage.setItem('user_id', user_id);
+        }
+      });
+    }, []);
+  };
+
   // Set up an empty comparison object
   const comp = { title: '', currency: '', price: '', description: '', details: [''], 
                 images: [''], reviews: {count: '', rating: ''}, url: '' }
@@ -55,10 +68,22 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState<string[]>([]);
   const [searchIndex, setSearchIndex] = useState(0);
 
+  // Set up state variable for available comparisons
+  const [available, setAvailable] = useState(() => {
+    // Retrieve variable from local storage else set to 5
+    const storedAvailable = localStorage.getItem('available');
+    return storedAvailable ? parseInt(storedAvailable) : 5;
+  });
+
+  // Update local storage when available changes
+  useEffect(() => {
+    localStorage.setItem('available', available.toString());
+  }, [available]);
+
+
   // Function to scroll with feature list
   const scrollWithFeatureList = (direction: number) => {
     const maxIndex = searchResults.length;
-    console.log(searchFeature);
 
     // Scroll to the next or previous feature
     if (searchFeature !== '') {
@@ -182,7 +207,8 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ product1url: product_url1, product2url: product_url2 }),
+        body: JSON.stringify({ product1url: product_url1, product2url: product_url2, 
+                               user_id: localStorage.getItem('user_id') }),
       });
 
       // Parse the JSON response
@@ -190,11 +216,11 @@ export default function Home() {
       
       // Update the status state with the response status
       setStatus(data.status);
-      console.log(data);
 
       // Check if the response status is 200
       if (data.status === 200){
-        console.log(data.message);
+        // Update the available state with the response available
+        setAvailable(data.available);
         // Update the status message state with the response message
         setStatusMessage(data.message)
         // Update the product states with the comparison results
@@ -202,9 +228,15 @@ export default function Home() {
         setProduct2(data.product2);
         // Update the matched features state with the comparison results
         setMatchedFeatures(data.matched_features);
-
         // Set scrollToSection to true after successful response
         setScrollToSection(true);
+      }
+
+      else if (data.status === 403){
+        // Update the available state with the response available
+        setAvailable(data.available);
+        // Update the status message state with the response message
+        setStatusMessage(data.message)
       }
       
       // Check if the response status is 400
@@ -286,27 +318,34 @@ export default function Home() {
       {/* Main section */}
       <main className="flex flex-col items-center justify-between px-4 py-36 sm:py-36 md:sm:px-4 md:py-36 lg:p-48 h-screen w-screen bg-gradient-to-b from-white to-black via-gray-500 bg-radial">
         <div className='p-6'>
+        <PopupCounter value={available}/>
+
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl text-white font-bold">Side-by-Side Comparison</h1>
         </div>
         <form className="flex flex-col items-center justify-center lg:p-12 md:px-2 sm:p-4" onSubmit={compareSubmit}>
           <div className="lg:grid lg:grid-cols-2 lg:gap-6 py-6">
             <div className='flex items-center lg:mb-0 mb-4'>
               {StoreCheck(product_url1) /* Render the store icon*/}
+
               <input className={`${StoreCheck(product_url1) ? "ml-4" : "ml-0"} outline-none focus:outline-none focus:ring-2 focus:ring-gray-600 hover:ring-2 hover:ring-gray-600 border border-outline rounded-lg px-4 py-6 lg:w-96 w-72`}
               type="text" name="product1" id="product1" placeholder="Product 1" 
               required value={product_url1} onChange={(e) => setProduct_url1(e.target.value)}/>
             </div>
-            <div className='flex items-center lg:mb-0 mb-4'>
+            <div className='flex items-center lg:mb-0 mb-2'>
               <input className={`${StoreCheck(product_url2) ? "mr-4" : "mr-0"} outline-none focus:outline-none focus:ring-2 focus:ring-gray-600 hover:ring-2 hover:ring-gray-600 border border-outline rounded-lg px-4 py-6 lg:w-96 w-72`}
               type="text" name="product2" id="product2" placeholder="Product 2" 
               required value={product_url2} onChange={(e) => setProduct_url2(e.target.value)}/>
+              
               {StoreCheck(product_url2) /* Render the store icon*/}
             </div>
           </div>
-          <button type="submit" className={`${product_url1 && product_url2 ? 'bg-black hover:bg-blue-500' : 'bg-gray-300 disabled'} text-white font-bold py-5 px-8 rounded-lg focus:shadow-outline focus:outline-none transition duration-300 ease-in-out`}>Compare</button>
+          <div className='text-gray-400 text-sm mb-4'>You have {available} comparisons left</div>
+          <button id="compare-button" type="submit" className={`${product_url1 && product_url2 ? 'bg-black hover:bg-blue-500' : 'bg-gray-300 disabled'} text-white font-bold py-5 px-8 rounded-lg focus:shadow-outline focus:outline-none transition duration-300 ease-in-out`}>
+            Compare
+          </button>
         </form>
 
-        <div className='text-xs mt-4 lg:md:sm:text-sm'>
+        <div className='text-xs mt-2 lg:md:sm:text-sm'>
         {!status && 
           <span className="text-gray-400">Only 
             <FaAmazon size={20} className='inline shadow m-2'/>and 
