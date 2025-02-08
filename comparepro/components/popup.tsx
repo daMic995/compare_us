@@ -4,7 +4,7 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 
 interface PopupCounterProps {
-    value: number;
+    value: number|null;
 }
 
 /**
@@ -13,6 +13,9 @@ interface PopupCounterProps {
  * @param {number} value The number of comparisons the user has made.
  */
 export default function PopupCounter({ value }: PopupCounterProps) {
+    if (value === null) {
+        return null
+    }
     const [open, setOpen] = useState(value <= 0);
     
     useEffect(() => {
@@ -24,7 +27,7 @@ export default function PopupCounter({ value }: PopupCounterProps) {
                 setOpen(true);
             }
         });
-    });
+    }, []);
 
     /**
      * Close the popup when the user clicks the close button.

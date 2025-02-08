@@ -19,17 +19,23 @@ import getUserId from '../components/getUserId';
 
 export default function Home() {
 
-  // Check if user ID is in local storage
-  if (!('user_id' in localStorage)){
-    // Set up state variable for user ID
-    useEffect(() => {
+  // Set up state variable for user ID
+  const [user_id, setUser_id] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check if user ID is in local storage
+    if (!('user_id' in localStorage)){
       getUserId().then(user_id => {
         if (user_id) {
           localStorage.setItem('user_id', user_id);
+          setUser_id(user_id);
         }
       });
-    }, []);
-  };
+    }
+    else {
+      setUser_id(localStorage.getItem('user_id'));
+    }
+  }, []);
 
   // Set up an empty comparison object
   const comp = { title: '', currency: '', price: '', description: '', details: [''], 
@@ -51,7 +57,6 @@ export default function Home() {
   
   // Set up state variable for scroll to section
   const [scrollToSection, setScrollToSection] = useState(false);
-  const targetRef = useRef<HTMLDivElement>(null);
 
   // Set up state variables for product descriptions display
   const [showDescription1, setShowDescription1] = useState(false);
@@ -69,15 +74,19 @@ export default function Home() {
   const [searchIndex, setSearchIndex] = useState(0);
 
   // Set up state variable for available comparisons
-  const [available, setAvailable] = useState(() => {
+  const [available, setAvailable] = useState<number|null>(null);
+  
+  useEffect(() => {
     // Retrieve variable from local storage else set to 5
     const storedAvailable = localStorage.getItem('available');
-    return storedAvailable ? parseInt(storedAvailable) : 5;
-  });
+    setAvailable(storedAvailable ? parseInt(storedAvailable) : 5);
+  }, []);
 
   // Update local storage when available changes
   useEffect(() => {
-    localStorage.setItem('available', available.toString());
+    if (available !== null) {
+      localStorage.setItem('available', available.toString());
+    }
   }, [available]);
 
 
@@ -141,7 +150,7 @@ export default function Home() {
       // Update the current index for the second product
       setCurrImg2Index(newIndex);
     }
-  }
+  };
 
   /**
    * Navigate to the next slide in the images list.
@@ -167,7 +176,7 @@ export default function Home() {
       // Update the current index for the second product
       setCurrImg2Index(newIndex);
     }
-  }
+  };
 
   /**
    * Navigate to a specific slide by index.
@@ -185,7 +194,7 @@ export default function Home() {
       // Update the current index for the second product
       setCurrImg2Index(index);
     }
-  }
+  };
 
   /**
    * Handles form submission for product comparison.
@@ -208,7 +217,7 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ product1url: product_url1, product2url: product_url2, 
-                               user_id: localStorage.getItem('user_id') }),
+                               user_id: user_id }),
       });
 
       // Parse the JSON response
