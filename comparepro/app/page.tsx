@@ -37,6 +37,11 @@ function Loader({ isloading }: { isloading: boolean }) {
   );
 }
 
+// Set up an empty comparison object
+const COMP = { title: '', currency: '', price: '', description: '', 
+              details: [''], images: [''], 
+              reviews: {count: '', rating: ''}, url: '' }
+
 export default function Home() {
 
   // Set up state variable for user ID
@@ -57,9 +62,7 @@ export default function Home() {
     }
   }, []);
 
-  // Set up an empty comparison object
-  const comp = { title: '', currency: '', price: '', description: '', details: [''], 
-                images: [''], reviews: {count: '', rating: ''}, url: '' }
+
 
   // Set up state variable for loading
   const [loading, setLoading] = useState(false);
@@ -67,8 +70,8 @@ export default function Home() {
   // Set up state variables for product URLs and comparison results
   const [product_url1, setProduct_url1] = useState('');
   const [product_url2, setProduct_url2] = useState('');
-  const [product1, setProduct1] = useState(comp);
-  const [product2, setProduct2] = useState(comp);
+  const [product1, setProduct1] = useState(COMP);
+  const [product2, setProduct2] = useState(COMP);
 
   // Set up state variable for comparison status message
   const[statusMessage, setStatusMessage] = useState('');
