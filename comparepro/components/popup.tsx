@@ -3,16 +3,13 @@ import { MdCancel } from "react-icons/md";
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 
-interface PopupCounterProps {
-    value: number|null;
-}
 
 /**
  * A popup that appears when the user has reached the maximum number of comparisons
  * allowed in the free version of the app.
  * @param {number} value The number of comparisons the user has made.
  */
-export default function PopupCounter({ value }: PopupCounterProps) {
+export default function PopupCounter({ value }: { value: number|null }) {
     if (value === null) {
         return null
     }

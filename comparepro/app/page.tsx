@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import React, { useState, useEffect, useRef } from 'react';
 
+import { ThreeDots } from 'react-loader-spinner';
 import { BsChevronCompactLeft, BsChevronCompactRight, BsChevronUp, BsChevronDown } from 'react-icons/bs';
 import { IoExtensionPuzzleOutline } from "react-icons/io5";
 import { TbApi } from "react-icons/tb";
@@ -16,6 +17,25 @@ import { searchFeatures, scrollToFeature } from '../components/features';
 import StoreCheck from '../components/storeCheck';
 import PopupCounter from '../components/popup';
 import getUserId from '../components/getUserId';
+
+
+function Loader({ isloading }: { isloading: boolean }) {
+  if (!isloading) {
+    return null;
+  }
+
+  return (
+    <ThreeDots
+      height="60"
+      width="60"
+      radius="5"
+      color="#000000"
+      ariaLabel="three-dots-loading"
+      wrapperStyle={{}}
+      visible={true}
+    />
+  );
+}
 
 export default function Home() {
 
@@ -41,12 +61,16 @@ export default function Home() {
   const comp = { title: '', currency: '', price: '', description: '', details: [''], 
                 images: [''], reviews: {count: '', rating: ''}, url: '' }
 
+  // Set up state variable for loading
+  const [loading, setLoading] = useState(false);
+
   // Set up state variables for product URLs and comparison results
   const [product_url1, setProduct_url1] = useState('');
   const [product_url2, setProduct_url2] = useState('');
   const [product1, setProduct1] = useState(comp);
   const [product2, setProduct2] = useState(comp);
 
+  // Set up state variable for comparison status message
   const[statusMessage, setStatusMessage] = useState('');
 
   // Set up state variable for matched features
@@ -205,6 +229,7 @@ export default function Home() {
   const compareSubmit = async (e: React.FormEvent) => {
     // Prevent default form submission behavior
     e.preventDefault();
+    setLoading(true);
 
     try {
       // Set the API route for the comparison
@@ -260,6 +285,9 @@ export default function Home() {
       console.error('Error comparing products:', error);
       setStatus(404);
     }
+
+    // Set loading state to false
+    setLoading(false);
   };
 
   // Scroll Effect
@@ -280,7 +308,7 @@ export default function Home() {
   }, [scrollToSection]);
 
   return (
-    <div className="flex flex-col min-h-screen overflow-hidden-x">
+    <div className="flex flex-col min-h-screen overflow-hidden">
       {/* Navbar */}
       <nav className="flex justify-between bg-white py-6 sm:px-2 sm:py-6 md:px-4 md:py-6 lg:px-6 lg:py-8 items-center shadow fixed top-0 left-0 right-0 z-10">
         {/* Logo */}
@@ -325,12 +353,15 @@ export default function Home() {
       </nav>
       
       {/* Main section */}
-      <main className="flex flex-col items-center justify-between px-4 py-36 sm:py-36 md:sm:px-4 md:py-36 lg:p-48 h-screen w-screen bg-gradient-to-b from-white to-black via-gray-500 bg-radial">
+      <main className="flex flex-col items-center justify-between px-4 py-36 sm:py-36 md:sm:px-4 md:py-36 lg:p-48 h-auto w-screen bg-gradient-to-b from-white to-black via-gray-500 bg-radial">
         <div className='p-6'>
         <PopupCounter value={available}/>
 
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl text-white font-bold">Side-by-Side Comparison</h1>
         </div>
+        {
+        loading ? <Loader isloading={loading} /> :
+
         <form className="flex flex-col items-center justify-center lg:p-12 md:px-2 sm:p-4" onSubmit={compareSubmit}>
           <div className="lg:grid lg:grid-cols-2 lg:gap-6 py-6">
             <div className='flex items-center lg:mb-0 mb-4'>
@@ -353,6 +384,7 @@ export default function Home() {
             Compare
           </button>
         </form>
+        }
 
         <div className='text-xs mt-2 lg:md:sm:text-sm'>
         {!status && 
@@ -368,14 +400,14 @@ export default function Home() {
 
       {/* Comparison section */}
       {status === 200 ? 
-      <div id="results-section" className='flex flex-col items-center justify-between px-0 lg:md:sm:px-6 lg:md:sm:py-6 w-screen bg-gradient-to-b from-black to-white via-gray-500 bg-radial'>
+      <section id="results-section" className='flex flex-col items-center justify-between px-0 lg:md:sm:px-6 lg:md:sm:py-6 w-screen bg-gradient-to-b from-black to-white via-gray-500 bg-radial'>
         <div className='flex flex-col items-center justify-between lg:md:sm:p-8'>
-          <div id="product-cards" className="grid grid-cols-2 gap-6 lg:md:sm:py-4 px-6">
+          <div id="product-cards" className="grid grid-cols-2 gap-6 lg:md:sm:py-4 px-2 lg:md:px-6">
             {/* Product cards */}
             {[product1, product2].map((product, productIndex) => (
             <div key={productIndex} id="product-card">
               <div className='flex flex-col bg-white rounded-lg'>
-                <div className='flex flex-col rounded-lg justify-left px-6 py-1'>
+                <div id='product-image' className='flex flex-col rounded-lg justify-left px-0 lg:md:px-6 py-1'>
                   {/* Product image */}
                   <div className='flex flex-col py-12 max-w-[500px] h-[500px] w-full m-auto relative group'>
                     <div style={{backgroundImage: `url(${product.images[productIndex=== 0 ? currImg1Index : currImg2Index]})`, 
@@ -388,10 +420,11 @@ export default function Home() {
                     <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] right-0 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
                       <BsChevronCompactRight onClick={() => nextSlide(product.images, productIndex)} size={30}/>
                     </div>
-                    <div className='flex top-4 justify-center py-2'>
+                    <div className='flex top-4 justify-center py-2 md:sm:flex-wrap'>
                       {product.images.map((slide, slideIndex) => (
-                        <div key={slideIndex} onClick={() => goToSlide(slideIndex, productIndex)}>
-                          <a className='text-sm lg:md:sm:text-xl cursor-pointer'>
+                        <div key={slideIndex} className='flex text-sm lg:md:sm:text-xl cursor-pointer' 
+                        onClick={() => goToSlide(slideIndex, productIndex)}>
+                          <a>
                             <RxDotFilled/>
                           </a>
                         </div>
@@ -400,28 +433,29 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className='lg:md:sm:grid lg:md:sm:grid-cols-5 lg:md:sm:gap-6 lg:md:sm:px-6 px-4'>
+                <div id='product-info' className='lg:md:sm:grid lg:md:sm:grid-cols-5 lg:md:sm:gap-6 lg:md:sm:px-6 px-4'>
                   {/* Product Title and Price */}
-                  <div className='flex flex-col col-span-4'>
+                  <div id='product-title' className='flex flex-col col-span-4'>
                     <p className='text-sm lg:text-lg md:text-base sm:text-sm font-bold text-black'>{product.title}</p>
                   </div>
-                  <div className='flex flex-col lg:md:sm:text-right text-center mt-2 lg:md:sm:mt-0'>
-                    <div id='product-price' className='bg-black rounded-md text-center py-2'>
+                  <div id='product-price' className='flex flex-col lg:md:sm:text-right text-center mt-2 lg:md:sm:mt-0'>
+                    <div id='price' className='bg-black rounded-md text-center py-2'>
                       <span className='text-white lg:sm:text-sm md:text-xs text-xs p-2'>{product.currency} {product.price}</span>
                     </div>
-                    <a href={product.url} className='text-white text-sm font-semibold hover:underline lg:md:sm:mt-10 mt-2 py-2'>
-                      <span className='bg-blue-500 p-2 rounded-md'>Get It</span>
+                    <a id='product-link' href={product.url} target="_blank" 
+                    className='bg-blue-500 p-2 rounded-md text-white text-sm text-center font-semibold hover:underline lg:md:sm:mt-10 mt-2 py-2'>
+                      Get It
                     </a>
                   </div>
                 </div>
 
-                <div className='flex flex-col rounded-lg justify-left lg:md:sm:p-6 p-2'>
+                <div id="product-rnd" className='flex flex-col rounded-lg justify-left lg:md:sm:p-6 p-2'>
 
-                  <div className='flex flex-col'>
+                  <div id="product-rating" className='flex flex-col'>
                     {/* Product Rating */}
                     {product.reviews.rating === '' ? "No reviews" :
-                      <div className='grid grid-cols-5'>
-                        <div className='flex flex-col col-span-2'>
+                      <div className='lg:md:grid lg:md:grid-cols-5'>
+                        <div id='product-star-rating' className='flex flex-col lg:md:col-span-2'>
                         <StarRatings
                           rating={parseFloat(product.reviews.rating)}
                           starRatedColor="gold"
@@ -431,10 +465,10 @@ export default function Home() {
                           starSpacing="2px"
                         />
                         </div>
-                        <div className='flex flex-col col-span-1 lg:md:sm:py-0 py-4'>
+                        <div id='product-number-rating' className='flex flex-col lg:md:col-span-1 lg:md:sm:py-0 py-4'>
                           <p className='text-sm text-gray-500'>{parseFloat(product.reviews.rating).toFixed(1)}</p>
                         </div>
-                        <div className='flex flex-col col-span-2 items-end lg:md:sm:py-0 py-2'>
+                        <div id='product-description' className='flex flex-col lg:md:col-span-2 items-end lg:md:sm:py-0 py-2'>
                           <button type='button' onClick={() => showDescription(productIndex)} 
                           className='text-xs lg:md:sm:text-sm text-gray-500 hover:underline cursor-pointer'>
                             {productIndex === 0 ? showDescription1 ? 'Hide Description' : 'View Description' 
@@ -472,7 +506,7 @@ export default function Home() {
           </div>
 
           {/* Product Details Comparison */}
-          <div id='product-details-section' className='flex flex-col px-6 mt-12' style={{width: '100%'}}>
+          <div id='product-details-section' className='flex flex-col px-2 lg:md:px-6 mt-12' style={{width: '100%'}}>
             <div>
               <h2 className='text-2xl text-white text-center font-semibold mb-8'>All Specifications</h2>
             </div>
@@ -508,7 +542,7 @@ export default function Home() {
             </button>
           </div>
         </div>
-      </div> : null}
+      </section> : null}
       {/* Footer */}
       <footer id='footer-section' className='bg-white shadow flex flex-col items-center justify-center p-4 bottom-0 w-full'>
         <p className="mt-4 text-gray-400 text-sm mb-2">Powered by</p>
