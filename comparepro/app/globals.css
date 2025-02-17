@@ -25,3 +25,13 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+/*Media Query for Mobile Menu Bar
+@media (max-width: 768px) {
+  #menu-button {
+    display: block;
+  }
+  #menu-item {
+    display: none;
+  }
+}*/
