@@ -126,14 +126,14 @@ export default function Home() {
     // Scroll to the next or previous feature
     if (searchFeature !== '') {
       if (maxIndex > 0) {
-        if (direction === 1 && searchIndex < maxIndex) {
+        if (direction === 1 && searchIndex < maxIndex-1) {
           setSearchIndex(searchIndex + 1);
           scrollToFeature(searchResults[searchIndex + 1]);
         } else if (direction === -1 && searchIndex > 0) {
-          setSearchIndex(searchIndex- 1);
+          setSearchIndex(searchIndex - 1);
           scrollToFeature(searchResults[searchIndex - 1]);
         }
-      }      
+      }
     }
     else {
       if (direction === 1) {
@@ -271,8 +271,14 @@ export default function Home() {
         </div>
         <div className="flex items-center">
           {/* Search feature */}
-          <form id='search-form' onSubmit={(e) => { e.preventDefault(); setSearchResults(searchFeatures(searchFeature, matchedFeatures)); setSearchIndex(0); }} className="flex items-center mr-8">
-            <button type='submit' className='focus:outline-none hover:bg-gray-300 p-2 rounded-lg'>
+          <div id='search-form'
+            className="flex items-center mr-8">
+            <button type='button' className='focus:outline-none hover:bg-gray-300 p-2 rounded-lg'
+              onClick={(e) => { 
+                e.preventDefault(); 
+                setSearchResults(searchFeatures(searchFeature, matchedFeatures)); 
+                setSearchIndex(0); 
+                scrollToFeature(searchResults[searchIndex]);}}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 pt-0.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -280,7 +286,7 @@ export default function Home() {
             <input className="sm:ml-0 lg:ml-2 text-base sm:text-base md:text-base lg:text-base outline-none bg-transparent border-outline border border-outline rounded-lg px-2" 
             type="text" name="searchfeature" id="searchfeature" placeholder="Search Feature..." 
             value={searchFeature} onChange={(e) => setSearchFeature(e.target.value)}/>
-          </form>
+          </div>
 
           <ul className="lg:px-4 md:sm:px-2 text-base flex items-center lg:space-x-6 md:sm:space-x-4 space-x-4 mr-2">
             <li className="font-semibold text-gray-700">
@@ -377,7 +383,7 @@ export default function Home() {
                         {const newIndex = nextSlide(product.images.length-1, productIndex, currImg1Index, currImg2Index);
                         goToSlide(newIndex, productIndex)}} size={30}/>
                     </div>
-                    <div className='flex top-4 justify-center py-2 flex-wrap'>
+                    <div className='flex top-4 justify-center py-2 flex-wrap lg:md:px-0 px-4'>
                       {product.images.map((slide, slideIndex) => (
                         <div key={slideIndex} className='flex text-sm lg:md:sm:text-xl cursor-pointer' 
                         onClick={() => goToSlide(slideIndex, productIndex)}>

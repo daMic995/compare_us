@@ -29,7 +29,7 @@ app.config['SESSION_PERMANENT'] = False
 # Enable CORS
 CORS(app)
 
-TEST_MODE = True
+TEST_MODE = False
 
 def setup_logger() -> None:
     """
@@ -110,16 +110,6 @@ def compare():
     product2 = data["product2url"]
     c_user_id = data["user_id"]
 
-    # Get available comparisons
-    available = int(upstash_redis_client.get(f'{c_user_id}:no_of_comparisons'))
-
-    # Check if there are available comparisons
-    if available <= 0:
-        # Return no available comparisons
-        return jsonify({"message": "You have exhausted your comparisons!", 
-                        "available": available,
-                        "status": 403})
-
     if TEST_MODE:
         # Load test products data
         with open('./api/data/amazon/test_data2.json', 'r') as f:
@@ -131,6 +121,16 @@ def compare():
         products = [test_product1, test_product2]
 
     else:
+        # Get available comparisons
+        available = int(upstash_redis_client.get(f'{c_user_id}:no_of_comparisons'))
+
+        # Check if there are available comparisons
+        if available <= 0:
+            # Return no available comparisons
+            return jsonify({"message": "You have exhausted your comparisons!", 
+                            "available": available,
+                            "status": 403})
+        
         # Load real products data
         products = [product1, product2]
 
@@ -188,15 +188,16 @@ def compare():
     # Group products by features
     matched_features = match_product_features(products[0]['details'], products[1]['details'])
 
-    # Update available comparisons in Redis
-    upstash_redis_client.set(f'{c_user_id}:no_of_comparisons', available-1)
+    if not TEST_MODE:
+        # Update available comparisons in Redis
+        upstash_redis_client.set(f'{c_user_id}:no_of_comparisons', available-1)
 
     return jsonify({
         "product1": products[0], 
         "product2": products[1], 
         "matched_features": matched_features,
         "message": "Products compared successfully!",
-        "available": available-1,
+        "available": available-1 if not TEST_MODE else 5,
         "status": 200})
 
 
