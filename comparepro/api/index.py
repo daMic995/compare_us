@@ -29,7 +29,7 @@ app.config['SESSION_PERMANENT'] = False
 # Enable CORS
 CORS(app)
 
-TEST_MODE = False
+TEST_MODE = True
 
 def setup_logger() -> None:
     """

@@ -25,7 +25,8 @@ export function scrollToFeature(productFeature: string) {
  * @param {string} productFeature - The feature to search for.
  * @param {Object} matchedFeatures - The object containing the matched features.
  */
-export function searchFeatures(productFeature: string, matchedFeatures: { [key: string]: [string, string] }): string[] {
+export function searchFeatures(productFeature: string, 
+    matchedFeatures: { [key: string]: [string, string] }): string[] {
     const searchMatch = []; // Initialize the search match array with the product details ID
     
     // Iterate over the matched features object
