@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request, session, redirect, url_for
 from flask_cors import CORS
 from upstash_redis import Redis
@@ -19,7 +20,7 @@ redis_url = os.getenv('UPSTASH_REDIS_REST_URL')
 token = os.getenv('UPSTASH_REDIS_REST_TOKEN')
 
 # Configure Redis
-upstash_redis_client = Redis(url="https://sought-husky-11990.upstash.io", token=token)
+upstash_redis_client = Redis(url=redis_url, token=token)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('REDIS_SECRET_KEY')
@@ -29,7 +30,7 @@ app.config['SESSION_PERMANENT'] = False
 # Enable CORS
 CORS(app)
 
-TEST_MODE = False
+TEST_MODE = True
 
 def setup_logger() -> None:
     """
