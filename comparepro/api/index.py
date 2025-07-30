@@ -12,7 +12,7 @@ import logging
 import sentry_sdk
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-from api.compare import *
+import api.compare as comp
 from api.features import match_product_features
 
 load_dotenv()
@@ -30,7 +30,7 @@ app.config['SESSION_PERMANENT'] = False
 # Enable CORS
 CORS(app)
 
-TEST_MODE = True
+TEST_MODE = False
 
 def setup_logger() -> None:
     """
@@ -110,6 +110,7 @@ def compare():
     product1 = data["product1url"]
     product2 = data["product2url"]
     c_user_id = data["user_id"]
+    print('ID from the frontend:', c_user_id)
 
     if TEST_MODE:
         # Load test products data
@@ -123,7 +124,13 @@ def compare():
 
     else:
         # Get available comparisons
-        available = int(upstash_redis_client.get(f'{c_user_id}:no_of_comparisons'))
+        try:
+            available = int(upstash_redis_client.get(f'{c_user_id}:no_of_comparisons'))
+
+        except Exception as e:
+            # Log any errors
+            logging.error(e)
+            return jsonify({"message": "Something went wrong!", "status": 500})
 
         # Check if there are available comparisons
         if available <= 0:
@@ -140,18 +147,18 @@ def compare():
                 print('Invalid/Empty product URL!')
                 return jsonify({"message": "Invalid product URL!", "status": 400})
                 
-            [store, url] = store_check(p)
+            [store, url] = comp.store_check(p)
                 
             if store == 'amazon':
                 # Get the product data from Amazon
-                pro = amzn_get_product(url)
+                pro = comp.amzn_get_product(url)
                 
                 if pro["status"] != 200:
                     logging.error(pro["message"])
                     return jsonify(pro)
                 
                 # Construct the valid product data for comparison
-                pro = amzn_comparator(pro["product"])
+                pro = comp.amzn_comparator(pro["product"])
 
                 # Replace the original product URL with the product data
                 products[products.index(p)] = pro
@@ -164,14 +171,14 @@ def compare():
 
             elif store == 'walmart':
                 # Get the product data from Walmart
-                pro = wlmrt_get_product(url)
+                pro = comp.wlmrt_get_product(url)
                 
                 if pro["status"] != 200:
                     logging.error(pro["message"])
                     return jsonify(pro)
                 
                 # Construct the valid product data for comparison
-                pro = wlmrt_comparator(pro["product"])
+                pro = comp.wlmrt_comparator(pro["product"])
 
                 # Replace the original product URL with the product data
                 products[products.index(p)] = pro
@@ -207,7 +214,7 @@ def reset():
     upstash_redis_client.set(f'{session['user_id']}:no_of_comparisons', 5)
     return redirect(url_for('index'))
 
-"""
+
 @app.route("/api/python/decrement")
 def decrement():
     curr_comparisons = int(upstash_redis_client.get('no_of_comparisons'))
@@ -215,7 +222,7 @@ def decrement():
 
     upstash_redis_client.set('no_of_comparisons', curr_comparisons-1)
     print('After decrement', upstash_redis_client.get('no_of_comparisons'))
-    return redirect(url_for('index'))"""
+    return redirect(url_for('index'))
 
 
 @app.errorhandler(Exception)

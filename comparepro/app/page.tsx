@@ -5,12 +5,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
 import { BsChevronCompactLeft, BsChevronCompactRight, BsChevronUp, BsChevronDown } from 'react-icons/bs';
 import { IoExtensionPuzzleOutline } from "react-icons/io5";
-import { TbApi } from "react-icons/tb";
+import { TbApi, TbBrandWalmart } from "react-icons/tb";
 import { LiaCommentsSolid } from "react-icons/lia";
 import { RxDotFilled } from 'react-icons/rx';
 import StarRatings from 'react-star-ratings';
-
-import { TbBrandWalmart } from "react-icons/tb";
 import { FaAmazon } from "react-icons/fa";
 
 import { searchFeatures, scrollToFeature } from '../components/features';
@@ -20,7 +18,7 @@ import PopupCounter from '../components/popup';
 import getUserId from '../components/getUserId';
 
 
-function Loader({ isloading }: { isloading: boolean }) {
+function Loader({ isloading }: {readonly isloading: boolean }) {
   if (!isloading) {
     return null;
   }
@@ -193,8 +191,11 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ product1url: product_url1, product2url: product_url2, 
-                               user_id: user_id }),
+        body: JSON.stringify({ 
+          product1url: product_url1, 
+          product2url: product_url2, 
+          user_id: user_id 
+        }),
       });
 
       // Parse the JSON response
@@ -271,22 +272,26 @@ export default function Home() {
         </div>
         <div className="flex items-center">
           {/* Search feature */}
-          <div id='search-form'
-            className="flex items-center mr-8">
-            <button type='button' className='focus:outline-none hover:bg-gray-300 p-2 rounded-lg'
-              onClick={(e) => { 
-                e.preventDefault(); 
-                setSearchResults(searchFeatures(searchFeature, matchedFeatures)); 
-                setSearchIndex(0); 
-                scrollToFeature(searchResults[searchIndex]);}}>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 pt-0.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <form id='search-form'
+            className="flex items-center mr-8"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const newSearchResults = searchFeatures(searchFeature, matchedFeatures);
+              setSearchResults(newSearchResults);
+              setSearchIndex(0);
+              if (newSearchResults.length > 0) {
+                scrollToFeature(newSearchResults[0]);
+              }
+            }}>
+            <button type='submit' aria-label="Search" className='focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:bg-gray-300 p-2 rounded-lg'>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 pt-0.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
             <input className="sm:ml-0 lg:ml-2 text-base sm:text-base md:text-base lg:text-base outline-none bg-transparent border-outline border border-outline rounded-lg px-2" 
             type="text" name="searchfeature" id="searchfeature" placeholder="Search Feature..." 
             value={searchFeature} onChange={(e) => setSearchFeature(e.target.value)}/>
-          </div>
+          </form>
 
           <ul className="lg:px-4 md:sm:px-2 text-base flex items-center lg:space-x-6 md:sm:space-x-4 space-x-4 mr-2">
             <li className="font-semibold text-gray-700">
@@ -468,8 +473,12 @@ export default function Home() {
 
           {/* Product Details Comparison */}
           <div id='product-details-section' className='flex flex-col px-2 lg:md:px-6 mt-12' style={{width: '100%'}}>
-            <div>
-              <h2 className='text-2xl text-white text-center font-semibold mb-8'>All Specifications</h2>
+            <div className='mb-8'>
+              <h2 className='text-2xl text-white text-center font-semibold mb-2'>All Specifications</h2>
+              <p className='text-gray-400 text-sm md:text-base xl:lg:text-base text-center'>
+                <span className='underline'>Disclaimer</span>: The specifications algorithm may innacurrately match features. 
+                Make informed comparisons before purchasing items.
+              </p>
             </div>
             {Object.entries(matchedFeatures).map(([key, value]) => (
               <div key={key} id={key.toLowerCase()} 
