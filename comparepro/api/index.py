@@ -110,7 +110,6 @@ def compare():
     product1 = data["product1url"]
     product2 = data["product2url"]
     c_user_id = data["user_id"]
-    print('ID from the frontend:', c_user_id)
 
     if TEST_MODE:
         # Load test products data
@@ -124,13 +123,14 @@ def compare():
 
     else:
         # Get available comparisons
-        try:
-            available = int(upstash_redis_client.get(f'{c_user_id}:no_of_comparisons'))
+        avail_no = upstash_redis_client.get(f'{c_user_id}:no_of_comparisons')
 
-        except Exception as e:
-            # Log any errors
-            logging.error(e)
-            return jsonify({"message": "Something went wrong!", "status": 500})
+        # TODO: Fix generate_user_id() to set the user ID in session so that this is not needed
+        if not avail_no:
+            # If no available comparisons, set to 5
+            upstash_redis_client.set(f'{c_user_id}:no_of_comparisons', 5)
+
+        available = int(upstash_redis_client.get(f'{c_user_id}:no_of_comparisons'))
 
         # Check if there are available comparisons
         if available <= 0:
