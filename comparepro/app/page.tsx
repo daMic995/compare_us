@@ -5,21 +5,20 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
 import { BsChevronCompactLeft, BsChevronCompactRight, BsChevronUp, BsChevronDown } from 'react-icons/bs';
 import { IoExtensionPuzzleOutline } from "react-icons/io5";
-import { TbApi } from "react-icons/tb";
+import { TbApi, TbBrandWalmart } from "react-icons/tb";
 import { LiaCommentsSolid } from "react-icons/lia";
 import { RxDotFilled } from 'react-icons/rx';
 import StarRatings from 'react-star-ratings';
-
-import { TbBrandWalmart } from "react-icons/tb";
 import { FaAmazon } from "react-icons/fa";
 
 import { searchFeatures, scrollToFeature } from '../components/features';
+import { prevSlide, nextSlide } from '../components/imageNav';
 import StoreCheck from '../components/storeCheck';
 import PopupCounter from '../components/popup';
 import getUserId from '../components/getUserId';
 
 
-function Loader({ isloading }: { isloading: boolean }) {
+function Loader({ isloading }: {readonly isloading: boolean }) {
   if (!isloading) {
     return null;
   }
@@ -103,6 +102,7 @@ export default function Home() {
   // Set up state variable for available comparisons
   const [available, setAvailable] = useState<number|null>(null);
   
+  // Use useEffect to run only on client side
   useEffect(() => {
     // Retrieve variable from local storage else set to 5
     const storedAvailable = localStorage.getItem('available');
@@ -124,14 +124,14 @@ export default function Home() {
     // Scroll to the next or previous feature
     if (searchFeature !== '') {
       if (maxIndex > 0) {
-        if (direction === 1 && searchIndex < maxIndex) {
+        if (direction === 1 && searchIndex < maxIndex-1) {
           setSearchIndex(searchIndex + 1);
           scrollToFeature(searchResults[searchIndex + 1]);
         } else if (direction === -1 && searchIndex > 0) {
-          setSearchIndex(searchIndex- 1);
+          setSearchIndex(searchIndex - 1);
           scrollToFeature(searchResults[searchIndex - 1]);
         }
-      }      
+      }
     }
     else {
       if (direction === 1) {
@@ -141,8 +141,7 @@ export default function Home() {
         scrollToFeature('product-details-section');
       }
     }
-
-  }
+  };
 
   // Function to toggle product description display
   const showDescription = (index: number) => {
@@ -150,58 +149,6 @@ export default function Home() {
       setShowDescription1(!showDescription1);
     } else {
       setShowDescription2(!showDescription2);
-    }
-  }
-
-  /**
-   * Navigate to the previous slide in the images list.
-   * If the current index is the first one, wrap around to the last one.
-   *
-   * @param {string[]} imagesList - The list of images to navigate.
-   * @param {number} proIndex - The index indicating which product's images are being navigated.
-   */
-  const prevSlide = (imagesList: string[], proIndex: number) => {
-    // Determine if we're navigating the first product's images
-    if (proIndex === 0) {
-      // Check if the current index is the first slide
-      const isFirstSlide = currImg1Index === 0;
-      // Calculate the new index, wrapping around if necessary
-      const newIndex = isFirstSlide ? imagesList.length - 1 : currImg1Index - 1;
-      // Update the current index for the first product
-      setCurrImg1Index(newIndex);
-    } else {
-      // Check if the current index is the first slide for the second product
-      const isFirstSlide = currImg2Index === 0;
-      // Calculate the new index, wrapping around if necessary
-      const newIndex = isFirstSlide ? imagesList.length - 1 : currImg2Index - 1;
-      // Update the current index for the second product
-      setCurrImg2Index(newIndex);
-    }
-  };
-
-  /**
-   * Navigate to the next slide in the images list.
-   * If the current index is the last one, wrap around to the first one.
-   *
-   * @param {string[]} imagesList - The list of images to navigate.
-   * @param {number} proIndex - The index indicating which product's images are being navigated.
-   */
-  const nextSlide = (imagesList: string[], proIndex: number) => {
-    // Determine if we're navigating the first product's images
-    if (proIndex === 0) {
-      // Check if the current index is the last slide
-      const isLastSlide = currImg1Index === imagesList.length - 1;
-      // Calculate the new index, wrapping around if necessary
-      const newIndex = isLastSlide ? 0 : currImg1Index + 1;
-      // Update the current index for the first product
-      setCurrImg1Index(newIndex);
-    } else {
-      // Check if the current index is the last slide for the second product
-      const isLastSlide = currImg2Index === imagesList.length - 1;
-      // Calculate the new index, wrapping around if necessary
-      const newIndex = isLastSlide ? 0 : currImg2Index + 1;
-      // Update the current index for the second product
-      setCurrImg2Index(newIndex);
     }
   };
 
@@ -244,8 +191,11 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ product1url: product_url1, product2url: product_url2, 
-                               user_id: user_id }),
+        body: JSON.stringify({ 
+          product1url: product_url1, 
+          product2url: product_url2, 
+          user_id: user_id 
+        }),
       });
 
       // Parse the JSON response
@@ -322,9 +272,19 @@ export default function Home() {
         </div>
         <div className="flex items-center">
           {/* Search feature */}
-          <form id='search-form' onSubmit={(e) => { e.preventDefault(); setSearchResults(searchFeatures(searchFeature, matchedFeatures)); setSearchIndex(0); }} className="flex items-center mr-8">
-            <button type='submit' className='focus:outline-none hover:bg-gray-300 p-2 rounded-lg'>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 pt-0.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <form id='search-form'
+            className="flex items-center mr-8"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const newSearchResults = searchFeatures(searchFeature, matchedFeatures);
+              setSearchResults(newSearchResults);
+              setSearchIndex(0);
+              if (newSearchResults.length > 0) {
+                scrollToFeature(newSearchResults[0]);
+              }
+            }}>
+            <button type='submit' aria-label="Search" className='focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:bg-gray-300 p-2 rounded-lg'>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 pt-0.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
@@ -406,6 +366,7 @@ export default function Home() {
       <section id="results-section" className='flex flex-col items-center justify-between px-0 lg:md:sm:px-6 lg:md:sm:py-6 w-screen bg-gradient-to-b from-black to-white via-gray-500 bg-radial'>
         <div className='flex flex-col items-center justify-between lg:md:sm:p-8'>
           <div id="product-cards" className="grid grid-cols-2 gap-6 lg:md:sm:py-4 px-2 lg:md:px-6">
+            
             {/* Product cards */}
             {[product1, product2].map((product, productIndex) => (
             <div key={productIndex} id="product-card">
@@ -417,21 +378,23 @@ export default function Home() {
                     backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', width: '100%', height: '100%', position: 'relative'}}></div>
                     {/* Left arrow */}
                     <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] left-0 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
-                      <BsChevronCompactLeft onClick={() => prevSlide(product.images, productIndex)} size={30}/>
+                      <BsChevronCompactLeft onClick={() => {
+                        const newIndex = prevSlide(product.images.length-1, productIndex, currImg1Index, currImg2Index);
+                        goToSlide(newIndex, productIndex)}} size={30}/>
                     </div>
                     {/* Right arrow */}
                     <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 -translate-y-[50%] right-0 text-2xl rounded-full bg-black/30 p-2 text-white cursor-pointer'>
-                      <BsChevronCompactRight onClick={() => nextSlide(product.images, productIndex)} size={30}/>
+                      <BsChevronCompactRight onClick={() => 
+                        {const newIndex = nextSlide(product.images.length-1, productIndex, currImg1Index, currImg2Index);
+                        goToSlide(newIndex, productIndex)}} size={30}/>
                     </div>
-                    <div className='flex top-4 justify-center py-2 md:sm:flex-wrap'>
+                    <div className='flex top-4 justify-center py-2 flex-wrap lg:md:px-0 px-4'>
                       {product.images.map((slide, slideIndex) => (
                         <div key={slideIndex} className='flex text-sm lg:md:sm:text-xl cursor-pointer' 
                         onClick={() => goToSlide(slideIndex, productIndex)}>
-                          <a>
                             <RxDotFilled/>
-                          </a>
                         </div>
-                    ))}
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -443,7 +406,7 @@ export default function Home() {
                   </div>
                   <div id='product-price' className='flex flex-col lg:md:sm:text-right text-center mt-2 lg:md:sm:mt-0'>
                     <div id='price' className='bg-black rounded-md text-center py-2'>
-                      <span className='text-white lg:sm:text-sm md:text-xs text-xs p-2'>{product.currency} {product.price}</span>
+                      <span className='text-white lg:sm:text-sm text-xs p-2'>{product.currency} {product.price}</span>
                     </div>
                     <a id='product-link' href={product.url} target="_blank" 
                     className='bg-blue-500 p-2 rounded-md text-white text-sm text-center font-semibold hover:underline lg:md:sm:mt-10 mt-2 py-2'>
@@ -452,7 +415,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div id="product-rnd" className='flex flex-col rounded-lg justify-left lg:md:sm:p-6 p-2'>
+                <div id="product-rnd" className='flex flex-col rounded-lg justify-left lg:md:sm:px-6 p-4'>
 
                   <div id="product-rating" className='flex flex-col'>
                     {/* Product Rating */}
@@ -510,8 +473,12 @@ export default function Home() {
 
           {/* Product Details Comparison */}
           <div id='product-details-section' className='flex flex-col px-2 lg:md:px-6 mt-12' style={{width: '100%'}}>
-            <div>
-              <h2 className='text-2xl text-white text-center font-semibold mb-8'>All Specifications</h2>
+            <div className='mb-8'>
+              <h2 className='text-2xl text-white text-center font-semibold mb-2'>All Specifications</h2>
+              <p className='text-gray-400 text-sm md:text-base xl:lg:text-base text-center'>
+                <span className='underline'>Disclaimer</span>: The specifications algorithm may innacurrately match features. 
+                Make informed comparisons before purchasing items.
+              </p>
             </div>
             {Object.entries(matchedFeatures).map(([key, value]) => (
               <div key={key} id={key.toLowerCase()} 

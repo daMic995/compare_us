@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request, session, redirect, url_for
 from flask_cors import CORS
 from upstash_redis import Redis
@@ -11,7 +12,7 @@ import logging
 import sentry_sdk
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-from api.compare import *
+import api.compare as comp
 from api.features import match_product_features
 
 load_dotenv()
@@ -19,7 +20,7 @@ redis_url = os.getenv('UPSTASH_REDIS_REST_URL')
 token = os.getenv('UPSTASH_REDIS_REST_TOKEN')
 
 # Configure Redis
-upstash_redis_client = Redis(url="https://sought-husky-11990.upstash.io", token=token)
+upstash_redis_client = Redis(url=redis_url, token=token)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('REDIS_SECRET_KEY')
@@ -110,16 +111,6 @@ def compare():
     product2 = data["product2url"]
     c_user_id = data["user_id"]
 
-    # Get available comparisons
-    available = int(upstash_redis_client.get(f'{c_user_id}:no_of_comparisons'))
-
-    # Check if there are available comparisons
-    if available <= 0:
-        # Return no available comparisons
-        return jsonify({"message": "You have exhausted your comparisons!", 
-                        "available": available,
-                        "status": 403})
-
     if TEST_MODE:
         # Load test products data
         with open('./api/data/amazon/test_data2.json', 'r') as f:
@@ -131,6 +122,23 @@ def compare():
         products = [test_product1, test_product2]
 
     else:
+        # Get available comparisons
+        avail_no = upstash_redis_client.get(f'{c_user_id}:no_of_comparisons')
+
+        # TODO: Fix generate_user_id() to set the user ID in session so that this is not needed
+        if not avail_no:
+            # If no available comparisons, set to 5
+            upstash_redis_client.set(f'{c_user_id}:no_of_comparisons', 5)
+
+        available = int(upstash_redis_client.get(f'{c_user_id}:no_of_comparisons'))
+
+        # Check if there are available comparisons
+        if available <= 0:
+            # Return no available comparisons
+            return jsonify({"message": "You have exhausted your comparisons!", 
+                            "available": available,
+                            "status": 403})
+        
         # Load real products data
         products = [product1, product2]
 
@@ -139,18 +147,18 @@ def compare():
                 print('Invalid/Empty product URL!')
                 return jsonify({"message": "Invalid product URL!", "status": 400})
                 
-            [store, url] = store_check(p)
+            [store, url] = comp.store_check(p)
                 
             if store == 'amazon':
                 # Get the product data from Amazon
-                pro = amzn_get_product(url)
+                pro = comp.amzn_get_product(url)
                 
                 if pro["status"] != 200:
                     logging.error(pro["message"])
                     return jsonify(pro)
                 
                 # Construct the valid product data for comparison
-                pro = amzn_comparator(pro["product"])
+                pro = comp.amzn_comparator(pro["product"])
 
                 # Replace the original product URL with the product data
                 products[products.index(p)] = pro
@@ -163,14 +171,14 @@ def compare():
 
             elif store == 'walmart':
                 # Get the product data from Walmart
-                pro = wlmrt_get_product(url)
+                pro = comp.wlmrt_get_product(url)
                 
                 if pro["status"] != 200:
                     logging.error(pro["message"])
                     return jsonify(pro)
                 
                 # Construct the valid product data for comparison
-                pro = wlmrt_comparator(pro["product"])
+                pro = comp.wlmrt_comparator(pro["product"])
 
                 # Replace the original product URL with the product data
                 products[products.index(p)] = pro
@@ -188,15 +196,16 @@ def compare():
     # Group products by features
     matched_features = match_product_features(products[0]['details'], products[1]['details'])
 
-    # Update available comparisons in Redis
-    upstash_redis_client.set(f'{c_user_id}:no_of_comparisons', available-1)
+    if not TEST_MODE:
+        # Update available comparisons in Redis
+        upstash_redis_client.set(f'{c_user_id}:no_of_comparisons', available-1)
 
     return jsonify({
         "product1": products[0], 
         "product2": products[1], 
         "matched_features": matched_features,
         "message": "Products compared successfully!",
-        "available": available-1,
+        "available": available-1 if not TEST_MODE else 5,
         "status": 200})
 
 
@@ -205,7 +214,7 @@ def reset():
     upstash_redis_client.set(f'{session['user_id']}:no_of_comparisons', 5)
     return redirect(url_for('index'))
 
-"""
+
 @app.route("/api/python/decrement")
 def decrement():
     curr_comparisons = int(upstash_redis_client.get('no_of_comparisons'))
@@ -213,7 +222,7 @@ def decrement():
 
     upstash_redis_client.set('no_of_comparisons', curr_comparisons-1)
     print('After decrement', upstash_redis_client.get('no_of_comparisons'))
-    return redirect(url_for('index'))"""
+    return redirect(url_for('index'))
 
 
 @app.errorhandler(Exception)
