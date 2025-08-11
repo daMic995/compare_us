@@ -37,9 +37,16 @@ function Loader({ isloading }: {readonly isloading: boolean }) {
 }
 
 // Set up an empty comparison object
-const COMP = { title: '', currency: '', price: '', description: '', 
-              details: [''], images: [''], 
-              reviews: {count: '', rating: ''}, url: '' }
+const COMP = { 
+  title: '', 
+  currency: '', 
+  price: '', 
+  description: '', 
+  details: [''], 
+  images: [''], 
+  reviews: {count: '', rating: ''}, 
+  url: '' 
+}
 
 export default function Home() {
 
@@ -112,6 +119,7 @@ export default function Home() {
   // Update local storage when available changes
   useEffect(() => {
     if (available !== null) {
+      console.log('Available: ' + available + ' ' + typeof available);
       localStorage.setItem('available', available.toString());
     }
   }, [available]);
@@ -132,14 +140,10 @@ export default function Home() {
           scrollToFeature(searchResults[searchIndex - 1]);
         }
       }
-    }
-    else {
-      if (direction === 1) {
-        scrollToFeature('footer-section');
-      }
-      else if (direction === -1) {
-        scrollToFeature('product-details-section');
-      }
+    } else if (direction === 1) {
+      scrollToFeature('footer-section');
+    } else if (direction === -1) {
+      scrollToFeature('product-details-section');
     }
   };
 
@@ -203,16 +207,17 @@ export default function Home() {
       
       // Update the status state with the response status
       setStatus(data.status);
-
+      
       // Check if the response status is 200
       if (data.status === 200){
         // Update the available state with the response available
-        setAvailable(data.available);
+        setAvailable(data.available_comparisons);
         // Update the status message state with the response message
         setStatusMessage(data.message)
         // Update the product states with the comparison results
-        setProduct1(data.product1);
-        setProduct2(data.product2);
+        let comparedProducts = data.products;
+        setProduct1(comparedProducts[0]);
+        setProduct2(comparedProducts[1]);
         // Update the matched features state with the comparison results
         setMatchedFeatures(data.matched_features);
         // Set scrollToSection to true after successful response
@@ -221,7 +226,7 @@ export default function Home() {
 
       else if (data.status === 403){
         // Update the available state with the response available
-        setAvailable(data.available);
+        setAvailable(data.available_comparisons);
         // Update the status message state with the response message
         setStatusMessage(data.message)
       }
